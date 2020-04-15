@@ -4,13 +4,16 @@
 # It will enter the source directory and run the configuration script. It will
 # then return to this directory and you will have to manually enter the libav
 # directory type 'make'.
+
+# Read this for more information on building for windows using MSVC:
+#   https://libav.org/documentation/platform.html#Microsoft-Visual-C_002b_002b-or-Intel-C_002b_002b-Compiler-for-Windows
+
+########## BEGIN USER EDIT SECTION #############
+
 libavDir=~/code/libav-12.3
 
 # Only needed if compiling Android
 NDK=~/code/android-ndk-r20b
-
-# Read this for more information on building for windows using MSVC:
-#   https://libav.org/documentation/platform.html#Microsoft-Visual-C_002b_002b-or-Intel-C_002b_002b-Compiler-for-Windows
 
 # Set the HSOT OS (the OS currently running this script). Options are:
 #   WIN64
@@ -28,13 +31,61 @@ TARGET_OS=ARMV7A
 # Set to 1 for Debug build, 0 for release build
 DEBUG=0
 
-CFLAGS=""
-LDFLAGS=""
-OS_SPECIFIC=""
+# Enabled features.
+# This example is for a streaming client, but you can 
+# put anything you want here. See ./configure --help for more info.
+ENABLED="--enable-protocol=file
+--enable-avformat
+--enable-avcodec
+--enable-decoder=h264
+--enable-decoder=aac
+--enable-decoder=hevc
+--enable-muxer=mp4
+--enable-muxer=mpegts
+--enable-muxer=hls
+--enable-muxer=flv
+--enable-demuxer=aac
+--enable-demuxer=h264
+--enable-demuxer=hevc
+--enable-parser=mpeg4video
+--enable-parser=aac
+--enable-parser=h264
+--enable-parser=hevc
+--enable-zlib"
+
+# Disabled features
+# This compiles SOOOO much faster and easier if you only
+# compile what you need.
+DISABLED="--disable-everything
+--disable-programs
+--disable-symver
+--disable-encoders
+--disable-decoders
+--disable-muxers
+--disable-demuxers
+--disable-parsers
+--disable-bsfs
+--disable-protocols
+--disable-indevs
+--disable-outdevs
+--disable-filters
+--disable-doc
+--disable-avdevice
+--disable-avfilter
+--disable-hwaccels"
+
+# Temporary features that should be removed before checking in this file
+TEMPORARY=""
+
+########## END USER EDIT SECTION #############
 
 # Let's begin. First, enter the new directory
 originalDir=`pwd`
 cd $libavDir
+
+CFLAGS=""
+LDFLAGS=""
+OS_SPECIFIC=""
 
 # Depending on the host OS
 case "$HOST_OS" in
@@ -95,52 +146,6 @@ else
 	# Don't enable --enable-runtime-cpudetect if cross-compiling!
 	OPTIMIZATIONS="--disable-debug"
 fi
-
-# Enabled features.
-# This example is for a streaming client, but you can 
-# put anything you want here. See ./configure --help for more info.
-ENABLED="--enable-protocol=file
---enable-avformat
---enable-avcodec
---enable-decoder=h264
---enable-decoder=aac
---enable-decoder=hevc
---enable-muxer=mp4
---enable-muxer=mpegts
---enable-muxer=hls
---enable-muxer=flv
---enable-demuxer=aac
---enable-demuxer=h264
---enable-demuxer=hevc
---enable-parser=mpeg4video
---enable-parser=aac
---enable-parser=h264
---enable-parser=hevc
---enable-zlib"
-
-# Disabled features
-# This compiles SOOOO much faster and easier if you only
-# compile what you need.
-DISABLED="--disable-everything
---disable-programs
---disable-symver
---disable-encoders
---disable-decoders
---disable-muxers
---disable-demuxers
---disable-parsers
---disable-bsfs
---disable-protocols
---disable-indevs
---disable-outdevs
---disable-filters
---disable-doc
---disable-avdevice
---disable-avfilter
---disable-hwaccels"
-
-# Temporary features that should be removed before checking in this file
-TEMPORARY=""
 
 # Run the configure script
 ARGS="$OS_SPECIFIC \
