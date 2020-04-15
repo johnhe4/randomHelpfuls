@@ -1,13 +1,5 @@
 #!/bin/bash
 
-# John Harrison
-# February 1, 2016
-# Kushal Azim
-# Oct 9, 2018
-# Changes:
-#   1. Removed --enable-small,
-#   2. Added --prefix=.
-#   3. Added --enable-lto
 # This is a helper script to configure libav. THIS DOES NOT BUILD ANYTHING!
 # It will enter the source directory and run the configuration script. It will
 # then return to this directory and you will have to manually enter the libav
@@ -17,12 +9,6 @@ libavDir=~/code/libav-12.3
 # Only needed if compiling Android
 NDK=~/code/android-ndk-r20b
 
-# Kushal: Added specific branch checkout
-# branch_or_release_name=n4.0.2 # Discuss with John or Durga about branch change.
-# if [ -d .git ]; then
-#     echo "Changing to branch/tag: $branch_or_release_name, Make sure you pulled the latest change."
-#     git checkout $branch_or_release_name
-# fi
 # Read this for more information on building for windows using MSVC:
 #   https://libav.org/documentation/platform.html#Microsoft-Visual-C_002b_002b-or-Intel-C_002b_002b-Compiler-for-Windows
 
@@ -106,13 +92,13 @@ esac
 if [ $DEBUG == 1 ]; then
 	OPTIMIZATIONS="--disable-optimizations --enable-debug=3"
 else
-	#OPTIMIZATIONS="--enable-runtime-cpudetect --enable-small --disable-debug"
-	# Kushal: I removed the --enable-small for binaries to execute faster
-    #OPTIMIZATIONS="--enable-runtime-cpudetect  --disable-debug" THIS BREAKS CROSS-COMPILATION!!!
+	# Don't enable --enable-runtime-cpudetect if cross-compiling!
 	OPTIMIZATIONS="--disable-debug"
 fi
 
-# Enabled features #Kushal: Added mpegts #boxu: Added mjpeg
+# Enabled features.
+# This example is for a streaming client, but you can 
+# put anything you want here. See ./configure --help for more info.
 ENABLED="--enable-protocol=file
 --enable-avformat
 --enable-avcodec
@@ -132,7 +118,9 @@ ENABLED="--enable-protocol=file
 --enable-parser=hevc
 --enable-zlib"
 
-# Disabled features # Kushal: Enabled program
+# Disabled features
+# This compiles SOOOO much faster and easier if you only
+# compile what you need.
 DISABLED="--disable-everything
 --disable-programs
 --disable-symver
@@ -153,17 +141,8 @@ DISABLED="--disable-everything
 
 # Temporary features that should be removed before checking in this file
 TEMPORARY=""
-#TEMPORARY="--enable-version3 --enable-encoder=libvo_aacenc --enable-libvo-aacenc"
-#CFLAGS+="-IC:/code/3D4U/LiveEvent/include "
-
-# If using librtmp, it needs to be downloaded and compiled on linux for either platform
-# make sys=mingw for windows
-# make sys=posix for linux 
-# NOTE: This last part didn't actually work :)
-#LDFLAGS+="-L/root/Downloads/rtmpdump-2.3/librtmp"
 
 # Run the configure script
-# Kushal: Added --prefix=. --enable-lto
 ARGS="$OS_SPECIFIC \
 	$OPTIMIZATIONS \
 	$DISABLED $ENABLED \
