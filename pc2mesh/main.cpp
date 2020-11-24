@@ -12,6 +12,7 @@ struct Args
 {
    std::string inputFilename;
    std::string outputFilename;
+   double searchRadius = 1.;
 }args;
 
 enum class FILE_TYPE
@@ -107,12 +108,18 @@ int main( int argc, char *argv[] )
    
    app.add_option( "-i,--input", args.inputFilename, "Input point cloud (.dtm)\n" )->required();
    app.add_option( "-o,--output", args.outputFilename, "Output mesh as PLY file\n" )->required();
+   app.add_option( "-r,--search_radius", args.searchRadius, "Maximum radius to search for neighbors, in meters\n", true );
    
-   // The default arguments are files or a directory
-   //std::vector< std::string > filesOrDirectory;
-   //app.add_option_function< std::vector< std::string > >( "files-or-directory", ParseFilesOrDirectory, "Input files or directory" )->excludes( streamOption );
-
-   CLI11_PARSE( app, argc, argv );
+   try
+   {
+      app.parse(argc, argv);
+   }
+   catch( const CLI::ParseError &e )
+   {
+      std::cout << e.what() << "\n";
+      std::cout << app.help();
+      return 1;
+   }
 
    // Read in the file, return a PCL object representing a point cloud
    const auto cloud = std::make_shared<pcl::PointCloud<pcl::PointXYZ>>( ReadFile( args.inputFilename ) );
@@ -124,7 +131,7 @@ int main( int argc, char *argv[] )
    tree->setInputCloud( cloud );
    n.setInputCloud( cloud );
    n.setSearchMethod( tree );
-   n.setKSearch( 20 );
+   n.setKSearch( 10 );
    n.compute( normals );
    // normals should not contain the point normals + surface curvatures
 
@@ -142,15 +149,15 @@ int main( int argc, char *argv[] )
    pcl::PolygonMesh triangles;
    
    // Set the maximum distance between connected points (maximum edge length)
-   gp3.setSearchRadius( 0.025 );
+   gp3.setSearchRadius( args.searchRadius );
   
    // Set typical values for the parameters
    gp3.setMu( 2.5 );
    gp3.setMaximumNearestNeighbors( 100 );
-   gp3.setMaximumSurfaceAngle( M_PI/4 ); // 45 degrees
+   gp3.setMaximumSurfaceAngle( M_PI/2 ); // 90 degrees
    gp3.setMinimumAngle( M_PI/18 ); // 10 degrees
    gp3.setMaximumAngle( 2 * M_PI/3 ); // 120 degrees
-   gp3.setNormalConsistency( false );
+   gp3.setNormalConsistency( true );
 
    // Get result
    gp3.setInputCloud( cloud_with_normals );
