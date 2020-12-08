@@ -5,7 +5,7 @@ Converts a point cloud to a triangulated mesh. Assuming you can build against PC
 Accepts a single DTM file, where the data is a comma-separated value (CSV) ASCII format.
 
 ## Output
-Outputs sa triangulated mesh as PLY (ASCII) file. PCL does all the heavy lifting here.
+Outputs a triangulated mesh as a PLY (ASCII) file. PCL does the heavy lifting.
 
 ## Dependencies
 ### CLI11
