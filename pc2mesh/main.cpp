@@ -229,8 +229,8 @@ int main( int argc, char *argv[] )
    // Process command-line arguments
    CLI::App app{ "App description" };
    
-   app.add_option( "-i,--input", args.inputFilename, "Input point cloud {.dtm|.las})\n" )->required();
-   app.add_option( "-o,--output", args.outputFilename, "Output mesh as PLY file\n" )->required();
+   app.add_option( "-i,--input", args.inputFilename, "Input point cloud file {.dtm|.las|.laz})\n" )->required();
+   app.add_option( "-o,--output", args.outputFilename, "Output mesh as PLY file. Will also output a point cloud PLY file in case it's useful\n" )->required();
    app.add_option( "--lat", args.latitude, "Specifiy a reference latitude, used for --distance\n" );
    app.add_option( "--long", args.longitude, "Specifiy a reference longitude, used for --distance\n" );
    app.add_option( "-d,--distance", args.searchRadius, "Only include points within --distance of specified --lat and --long. Always in meters\n", true );
