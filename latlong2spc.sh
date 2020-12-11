@@ -20,4 +20,5 @@ zone=901
 #  '-s' will reverse the output so N comes first, then W
 #  '+units' specifies which units we are inputting
 #  '-f <format>' Output ASCII-compatible lat/long (no degree symbols)
-echo $lon $lat | cs2cs +proj=latlong +init=EPSG:4326 +to +init=NAD83:$zone +units=us-ft
+#echo $lon $lat | cs2cs +proj=latlong +init=EPSG:4326 +to +init=NAD83:$zone +units=us-ft
+echo $lon $lat | cs2cs +proj=latlong +datum=WGS84 +to +init=NAD83:$zone +units=us-ft

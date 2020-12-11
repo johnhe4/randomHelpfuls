@@ -26,6 +26,12 @@ find_package( PCL REQUIRED COMPONENTS common io kdtree features search surface o
 # Use CLI11 for argument parsing
 find_package( CLI11 REQUIRED )
 
+# LAS read suppor using libLAS
+find_package( libLAS REQUIRED )
+
+# PROJ, because required by libLAS and it is used for coordinate transformations
+find_package( PROJ )
+
 if (APPLE)
    if (CMAKE_SYSTEM_NAME STREQUAL "iOS")
       set( PLATFORM_STRING "iphoneos" )
@@ -56,4 +62,4 @@ set( CMAKE_LIBRARY_OUTPUT_DIRECTORY         ${BIN_DIR}$<0:> )
 set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY         ${BIN_DIR}$<0:> )
 
 add_executable( pc2mesh main.cpp utility.hpp )
-target_link_libraries( pc2mesh ${PCL_LIBRARIES} )
+target_link_libraries( pc2mesh ${PCL_LIBRARIES} ${libLAS_LIBRARIES} ${PROJ_LIBRARIES} )
