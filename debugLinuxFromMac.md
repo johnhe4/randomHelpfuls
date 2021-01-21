@@ -1,5 +1,5 @@
 # Remotely debug a Linux console C++ app from Mac
-The idea here is to debug a C++ Linux application from a different machine, in this case a Mac. Visual Studio Code (VSCode)is used to acomplish this.
+The idea here is to debug a C++ Linux application from a different machine, in this case a Mac. Visual Studio Code (VSCode) is used to acomplish this.
 
 ## Why bother?
 Server-side Linux applications almost always run headless, which means they run from the command line and don't have a graphical user interface (GUI). These applications usuallly run on headless servers which don't provide a GUI for anything anyway, so debugging on these machines is also from a command line. Not my cup-of-tea.
