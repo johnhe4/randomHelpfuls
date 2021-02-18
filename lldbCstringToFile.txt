@@ -1,0 +1,17 @@
+This was helpful when I needed to print the contents of a std::vector<uint8_t> named '_bigBuffer' to a file. 
+
+First, null-terminate the vector if not already null terminated.
+
+Second, up the value of the read size in LLDB. I chose a value of 100000 because I knew the approximate size of the vector.
+
+Finally, read the memory and save to a file
+
+In LLDB:
+$> expr _bigBuffer.push_back(0)
+$> setting set target.max-string-summary-length 100000
+$> memory read -fs --outfile ~/debug.json  --force _bigBuffer.data() _bigBuffer.data()+_bigBuffer.size()
+
+You can get more info by typing:
+$> help memory read
+
+For the various options, you can get info by not specifying values, for example '-f' without a number will print info for formats.
