@@ -1,0 +1,7 @@
+If the NVidia driver fails to install because it cannot find the kernel headers, you need to run again with:
+  sudo ./NVIDIA-Linux-*.run --kernel-source-path=/usr/src/linux
+
+assuming you have kernel source at /usr/src/linux.
+
+You can also try to install the package's version of the kernel headers:
+  sudo apt install linux-headers-$(uname -r)
