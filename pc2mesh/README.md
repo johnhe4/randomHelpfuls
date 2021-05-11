@@ -22,7 +22,7 @@ Outputs a triangulated mesh as a PLY (ASCII) file. PCL does the heavy lifting.
 [CLI11](https://github.com/CLIUtils/CLI11) is a header-only open source library used for command-line parsing.
 
 ### PROJ
-[PROJ](https://github.com/OSGeo/PROJ/tree/7.2) is a generic coordinate transformation software, that transforms coordinates from one coordinate reference system (CRS) to another.
+[PROJ](https://github.com/OSGeo/PROJ/tree/7.2) is a generic coordinate transformation software, that transforms coordinates from one coordinate reference system (CRS) to another. I had compilation errors for any version above 7.x .
 
 ### libLAS
 [libLAS](https://github.com/libLAS/libLAS) is a C/C++ library for reading and writing the very common LAS LiDAR format

@@ -17,6 +17,7 @@ struct Args
    double latitude = 0.;
    double longitude = 0.;
    double searchRadius = 0.;
+   std::string transform = "";
 }args;
 
 enum class FILE_TYPE
@@ -58,6 +59,25 @@ auto ReadFileDTM( std::ifstream & file )
    
    pcl::PointCloud<pcl::PointXYZ> returnValue;
 
+   std::array<double, 3> transform = {1,1,1};
+   if ( args.transform != "" )
+   {
+      std::istringstream is(args.transform);
+      std::vector< std::string > tokens;
+      std::string token;
+      while ( getline( is, token, ',') )
+         if ( token.size() )
+            tokens.emplace_back( token );
+
+      int index = 0;
+      for ( auto token : tokens )
+      {
+         transform[index++] = std::strtod(token.c_str(), nullptr);
+         if ( index == 3 )
+            break;
+      }
+   }
+
    while ( !file.eof() )
    {
       pcl::PointXYZ point;
@@ -67,7 +87,7 @@ auto ReadFileDTM( std::ifstream & file )
       {
          if ( i > 0 )
          {
-            point.data[ i - 1 ] = (float)strtod( cell.c_str(), nullptr );
+            point.data[ i - 1 ] = (float)strtod( cell.c_str(), nullptr ) * transform[i - 1];
          }
          
          if ( i == 3 )
@@ -234,6 +254,7 @@ int main( int argc, char *argv[] )
    app.add_option( "--lat", args.latitude, "Specifiy a reference latitude, used for --distance\n" );
    app.add_option( "--long", args.longitude, "Specifiy a reference longitude, used for --distance\n" );
    app.add_option( "-d,--distance", args.searchRadius, "Only include points within --distance of specified --lat and --long. Always in meters\n", true );
+   app.add_option( "--transform", args.transform, "Transformation vector as a comma-separated string in \"x,y,z\" order\n" );
    
    try
    {
