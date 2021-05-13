@@ -3,13 +3,13 @@ import math
 import inspect
 import bpy
 
-def export():
+def export(outputDir):
 
    transform = [1,-1,1]
 
    collection = bpy.data.collections['Collection']
    for object in collection.objects:
-      filename = "/Users/john/Downloads/byron_nelson/" + object.name + ".csv"
+      filename = outputDir + "/" + object.name + ".csv"
       filename.replace(" ", "_" )
       file = open( filename, "w+" )
       vertices = [ object.matrix_world.to_3x3() @ vert.co for vert in object.data.vertices ]
@@ -23,5 +23,5 @@ if __name__ == "__main__":
    #    import sys
    #    sys.path.append("directory_containing_this_script")
    #    import blenderExportPoints
-   #    export()
-   export()
+   #    blenderExportPoints.export("outputDirectory")
+   export("./")
