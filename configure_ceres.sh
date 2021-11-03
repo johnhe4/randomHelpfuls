@@ -2,11 +2,15 @@
 
 # This is a helper script to configure ceares. THIS DOES NOT BUILD ANYTHING!
 # It will enter the source directory and run the configuration script. 
-
+# Somewhat following instructions here: http://ceres-solver.org/installation.html#ios
+#
 ########## BEGIN USER EDIT SECTION #############
 
 # IMPORTANT: if building for iOS you need to grab the branch here (unless it has been merged to main):
 # https://ceres-solver-review.googlesource.com/c/ceres-solver/+/19180
+
+# IMPORTANT: if not installing ceres, copy the configured headers to the buildDir AFTER building:
+# cp config/ceres/internal/* ../include/ceres/internal/
 
 srcDir=~/code/ceres-solver
 
