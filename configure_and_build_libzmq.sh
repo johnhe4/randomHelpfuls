@@ -8,7 +8,10 @@
 # Location of the source
 srcDir=~/code/libzmq
 
-# Release or Debug?
+# Build type
+#  Debug
+#  Release
+#  MinSizeRel
 BUILD_TYPE=Release
 
 # I installed the dependcies manually, letting grpc build only itself
@@ -18,10 +21,15 @@ FEATURES=" \
 "
 
 # Building for what?
-# ios
-# ios_simulator
-# mac_catalyst
+#  ios
+#  ios_simulator
+#  mac_catalyst
 BUILD_FOR=ios_simulator
+
+# Target architecture
+#  arm64
+#  x86_64
+ARCH=arm64
 
 # You may need to configure OpenSSL, but I didn't
  OPEN_SSL=""
@@ -53,14 +61,14 @@ elif [ "$BUILD_FOR" = "ios_simulator" ]; then
 -DCMAKE_CXX_FLAGS=\"-fembed-bitcode\" \
    "
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
-   BUILD_CMD="xcodebuild build -project ZeroMQ.xcodeproj -scheme libzmq-static -configuration $BUILD_TYPE -destination \"platform=iOS Simulator,name=iPhone 13\" BUILD_FOR_DISTRIBUTION=YES"
+   BUILD_CMD="xcodebuild build -project ZeroMQ.xcodeproj -scheme libzmq-static -configuration $BUILD_TYPE -sdk iphonesimulator -arch $ARCH BUILD_FOR_DISTRIBUTION=YES"
 elif [ "$BUILD_FOR" = "mac_catalyst" ]; then
    FEATURES="$FEATURES \
 -DCMAKE_C_FLAGS=\"-fembed-bitcode\" \
 -DCMAKE_CXX_FLAGS=\"-fembed-bitcode\" \
    "
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
-   BUILD_CMD="xcodebuild build -project ZeroMQ.xcodeproj -scheme libzmq-static -configuration $BUILD_TYPE -destination \"platform=macOS,variant=Mac Catalyst,arch=x86_64\" BUILD_FOR_DISTRIBUTION=YES"
+   BUILD_CMD="xcodebuild build -project ZeroMQ.xcodeproj -scheme libzmq-static -configuration $BUILD_TYPE -destination \"platform=macOS,variant=Mac Catalyst,arch=$ARCH\" BUILD_FOR_DISTRIBUTION=YES"
 fi
 
 # Let's begin.

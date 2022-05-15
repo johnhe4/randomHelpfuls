@@ -14,60 +14,59 @@ srcDir=~/code/zfp
 FEATURES=" \
 "
 
-# Release or Debug?
-BUILD_TYPE="-DCMAKE_BUILD_TYPE=Release"
+# Build type
+#  Debug
+#  Release
+#  MinSizeRel
+BUILD_TYPE=MinSizeRel
 
-# iOS build? Leave empty if not
-PLATFORM="iOS"
+# Building for what?
+# ios
+# ios_simulator
+# mac_catalyst
+#
+# Note: you can do this once for each, then use 'lipo' to create a single fat library:
+#  lipo -create libdevice.a libsimulator.a -output libcombined.a
+BUILD_FOR=mac_catalyst
 
-# iOS simulator?
-SIMULATOR=ON
+# Target architecture
+#  arm64
+#  x86_64
+ARCH=x86_64
 
 ########## END USER EDIT SECTION #############
 
-BUILD_FOR=""
-if [ "$PLATFORM" = "iOS" ]; then
-   BUILD_FOR="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
+FEATURES="-DBUILD_SHARED_LIBS=OFF \
+-DBUILD_TESTING=OFF \
+-DBUILD_UTILITIES=OFF
+-DCMAKE_C_FLAGS=\"-fembed-bitcode\" \
+-DCMAKE_CXX_FLAGS=\"-fembed-bitcode\" \
+"
 
-   FEATURES="$FEATURES \
-   -DBUILD_SHARED_LIBS=OFF \
-   -DBUILD_TESTING=OFF \
-   -DBUILD_UTILITIES=OFF
-   -DCMAKE_C_FLAGS=\"-fembed-bitcode\" \
-   -DCMAKE_CXX_FLAGS=\"-fembed-bitcode\" \
-   "
-
-   if [ "$SIMULATOR" = "ON" ]; then
-      BUILD_FOR="$BUILD_FOR -DCMAKE_OSX_SYSROOT=iphonesimulator -DCMAKE_OSX_ARCHITECTURES=x86_64"
-   else
-      BUILD_FOR="$BUILD_FOR -DCMAKE_OSX_ARCHITECTURES=arm64"
-   fi
+OPTIONS=""
+BUILD_CMD="make -j16"
+if [ "$BUILD_FOR" = "ios" ]; then
+   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
+   BUILD_CMD="xcodebuild build -project ZFP.xcodeproj -scheme zfp -configuration $BUILD_TYPE -destination generic/platform=iOS BUILD_FOR_DISTRIBUTION=YES"
+elif [ "$BUILD_FOR" = "ios_simulator" ]; then
+   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
+   BUILD_CMD="xcodebuild build -project ZFP.xcodeproj -scheme zfp -configuration $BUILD_TYPE -sdk iphonesimulator -arch $ARCH BUILD_FOR_DISTRIBUTION=YES"
+elif [ "$BUILD_FOR" = "mac_catalyst" ]; then
+   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
+   BUILD_CMD="xcodebuild build -project ZFP.xcodeproj -scheme zfp -configuration $BUILD_TYPE -destination \"platform=macOS,variant=Mac Catalyst,arch=$ARCH\" BUILD_FOR_DISTRIBUTION=YES"
 fi
 
-# Let's begin. First, enter the new directory
+# Let's begin.
 originalDir=`pwd`
 cd $srcDir
-
-# Out-of-tree build
 mkdir -p build
-cd build 
+cd build
 
 # Run the configure script
-cmake .. $BUILD_FOR $BUILD_TYPE $OPEN_SSL $FEATURES
+cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE $OPTIONS $FEATURES
 
-if [ "$PLATFORM" = "iOS" ]; then
-   # Use Xcode to make and install
-   xcodebuild \
-   -configuration Release \
-   -target zfp \
-   CODE_SIGN_IDENTITY="" \
-   CODE_SIGNING_REQUIRED=NO
-else
-   sudo make install
-fi
+# Build
+eval $BUILD_CMD
 
 # Finally, return to the original directory
 cd $originalDir
-
-# iOS note: you can do this once for simulator and device, then use 'lipo' to create a fat library:
-#  lipo -create libdevice.a libsimulator.a -output libcombined.a

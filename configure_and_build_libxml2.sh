@@ -8,7 +8,10 @@
 # Location of the source
 srcDir=~/code/libxml2
 
-# Release or Debug?
+# Build type
+#  Debug
+#  Release
+#  MinSizeRel
 BUILD_TYPE=Release
 
 # Building for what?
@@ -16,6 +19,11 @@ BUILD_TYPE=Release
 # ios_simulator
 # mac_catalyst
 BUILD_FOR=ios_simulator
+
+# Target architecture
+#  arm64
+#  x86_64
+ARCH=arm64
 
 ########## END USER EDIT SECTION #############
 
@@ -59,10 +67,10 @@ if [ "$BUILD_FOR" = "ios" ]; then
    BUILD_CMD="xcodebuild build -project libxml2.xcodeproj -scheme LibXml2 -configuration $BUILD_TYPE -destination generic/platform=iOS BUILD_FOR_DISTRIBUTION=YES"
 elif [ "$BUILD_FOR" = "ios_simulator" ]; then
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
-   BUILD_CMD="xcodebuild build -project libxml2.xcodeproj -scheme LibXml2 -configuration $BUILD_TYPE -destination \"platform=iOS Simulator,name=iPhone 13\" BUILD_FOR_DISTRIBUTION=YES"
+   BUILD_CMD="xcodebuild build -project libxml2.xcodeproj -scheme LibXml2 -configuration $BUILD_TYPE -sdk iphonesimulator -arch $ARCH BUILD_FOR_DISTRIBUTION=YES"
 elif [ "$BUILD_FOR" = "mac_catalyst" ]; then
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
-   BUILD_CMD="xcodebuild build -project libxml2.xcodeproj -scheme LibXml2 -configuration $BUILD_TYPE -destination \"platform=macOS,variant=Mac Catalyst,arch=x86_64\" BUILD_FOR_DISTRIBUTION=YES"
+   BUILD_CMD="xcodebuild build -project libxml2.xcodeproj -scheme LibXml2 -configuration $BUILD_TYPE -destination \"platform=macOS,variant=Mac Catalyst,arch=$ARCH\" BUILD_FOR_DISTRIBUTION=YES"
 fi
 
 # Let's begin.
