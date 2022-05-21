@@ -12,13 +12,13 @@ srcDir=~/code/libxml2
 #  Debug
 #  Release
 #  MinSizeRel
-BUILD_TYPE=Release
+BUILD_TYPE=MinSizeRel
 
 # Building for what?
 # ios
 # ios_simulator
 # mac_catalyst
-BUILD_FOR=ios_simulator
+BUILD_FOR=ios
 
 # Target architecture
 #  arm64
@@ -64,13 +64,13 @@ OPTIONS=""
 BUILD_CMD="make -j16"
 if [ "$BUILD_FOR" = "ios" ]; then
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
-   BUILD_CMD="xcodebuild build -project libxml2.xcodeproj -scheme LibXml2 -configuration $BUILD_TYPE -destination generic/platform=iOS BUILD_FOR_DISTRIBUTION=YES"
+   BUILD_CMD="xcodebuild build -project libxml2.xcodeproj -scheme LibXml2 -configuration $BUILD_TYPE -destination generic/platform=iOS BUILD_FOR_DISTRIBUTION=YES BITCODE_GENERATION_MODE=bitcode"
 elif [ "$BUILD_FOR" = "ios_simulator" ]; then
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
-   BUILD_CMD="xcodebuild build -project libxml2.xcodeproj -scheme LibXml2 -configuration $BUILD_TYPE -sdk iphonesimulator -arch $ARCH BUILD_FOR_DISTRIBUTION=YES"
+   BUILD_CMD="xcodebuild build -project libxml2.xcodeproj -scheme LibXml2 -configuration $BUILD_TYPE -sdk iphonesimulator -arch $ARCH BUILD_FOR_DISTRIBUTION=YES BITCODE_GENERATION_MODE=bitcode"
 elif [ "$BUILD_FOR" = "mac_catalyst" ]; then
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
-   BUILD_CMD="xcodebuild build -project libxml2.xcodeproj -scheme LibXml2 -configuration $BUILD_TYPE -destination \"platform=macOS,variant=Mac Catalyst,arch=$ARCH\" BUILD_FOR_DISTRIBUTION=YES"
+   BUILD_CMD="xcodebuild build -project libxml2.xcodeproj -scheme LibXml2 -configuration $BUILD_TYPE -destination \"platform=macOS,variant=Mac Catalyst,arch=$ARCH\" BUILD_FOR_DISTRIBUTION=YES BITCODE_GENERATION_MODE=bitcode"
 fi
 
 # Let's begin.

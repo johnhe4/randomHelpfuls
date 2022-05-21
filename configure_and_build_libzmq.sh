@@ -12,7 +12,7 @@ srcDir=~/code/libzmq
 #  Debug
 #  Release
 #  MinSizeRel
-BUILD_TYPE=Release
+BUILD_TYPE=MinSizeRel
 
 # I installed the dependcies manually, letting grpc build only itself
 # Feature selection, each one beginning with '-D' because it's CMAKE
@@ -24,7 +24,7 @@ FEATURES=" \
 #  ios
 #  ios_simulator
 #  mac_catalyst
-BUILD_FOR=ios_simulator
+BUILD_FOR=ios
 
 # Target architecture
 #  arm64
@@ -44,31 +44,19 @@ FEATURES="$FEATURES \
 -DWITH_DOCS=OFF \
 -DWITH_LIBSODIUM=OFF \
 -DWITH_PERF_TOOL=OFF \
-   "
+"
 
 OPTIONS=""
 BUILD_CMD="make -j16"
 if [ "$BUILD_FOR" = "ios" ]; then
-   FEATURES="$FEATURES \
--DCMAKE_C_FLAGS=\"-fembed-bitcode\" \
--DCMAKE_CXX_FLAGS=\"-fembed-bitcode\" \
-   "
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
-   BUILD_CMD="xcodebuild build -project ZeroMQ.xcodeproj -scheme libzmq-static -configuration $BUILD_TYPE -destination generic/platform=iOS BUILD_FOR_DISTRIBUTION=YES"
+   BUILD_CMD="xcodebuild build -project ZeroMQ.xcodeproj -scheme libzmq-static -configuration $BUILD_TYPE -destination generic/platform=iOS BUILD_FOR_DISTRIBUTION=YES BITCODE_GENERATION_MODE=bitcode" 
 elif [ "$BUILD_FOR" = "ios_simulator" ]; then
-   FEATURES="$FEATURES \
--DCMAKE_C_FLAGS=\"-fembed-bitcode\" \
--DCMAKE_CXX_FLAGS=\"-fembed-bitcode\" \
-   "
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
-   BUILD_CMD="xcodebuild build -project ZeroMQ.xcodeproj -scheme libzmq-static -configuration $BUILD_TYPE -sdk iphonesimulator -arch $ARCH BUILD_FOR_DISTRIBUTION=YES"
+   BUILD_CMD="xcodebuild build -project ZeroMQ.xcodeproj -scheme libzmq-static -configuration $BUILD_TYPE -sdk iphonesimulator -arch $ARCH BUILD_FOR_DISTRIBUTION=YES BITCODE_GENERATION_MODE=bitcode"
 elif [ "$BUILD_FOR" = "mac_catalyst" ]; then
-   FEATURES="$FEATURES \
--DCMAKE_C_FLAGS=\"-fembed-bitcode\" \
--DCMAKE_CXX_FLAGS=\"-fembed-bitcode\" \
-   "
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
-   BUILD_CMD="xcodebuild build -project ZeroMQ.xcodeproj -scheme libzmq-static -configuration $BUILD_TYPE -destination \"platform=macOS,variant=Mac Catalyst,arch=$ARCH\" BUILD_FOR_DISTRIBUTION=YES"
+   BUILD_CMD="xcodebuild build -project ZeroMQ.xcodeproj -scheme libzmq-static -configuration $BUILD_TYPE -destination \"platform=macOS,variant=Mac Catalyst,arch=$ARCH\" BUILD_FOR_DISTRIBUTION=YES BITCODE_GENERATION_MODE=bitcode"
 fi
 
 # Let's begin.
