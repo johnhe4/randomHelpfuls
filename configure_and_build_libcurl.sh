@@ -13,7 +13,8 @@
 #  - install automake, autoconf, libtool. Use homebrew if you don't want to build and install manually
 #  - after installing you may need to symlink libtoolize:
 #      ln -s /usr/local/bin/glibtoolize /usr/local/bin/libtoolize
-#  - You may need to run `autoreconf -fi` before calling this script
+#  - You need to run `autoreconf -fi` from the curl directory before calling this script,
+#    including when you change the platform or architecture
 #
 ########## BEGIN USER EDIT SECTION #############
 
@@ -28,12 +29,12 @@ srcDir=~/code/curl
 #
 # Note: you can do this once for each, then use 'lipo' to create a single fat library:
 #  lipo -create libdevice.a libsimulator.a -output libcombined.a
-BUILD_FOR=mac_catalyst
+BUILD_FOR=ios_simulator
 
 # Target architecture
 #  arm64
 #  x86_64
-ARCH=x86_64
+ARCH=arm64
 
 ########## END USER EDIT SECTION #############
 
@@ -45,16 +46,20 @@ if [ "$BUILD_FOR" = "ios" ] || [ "$BUILD_FOR" = "ios_simulator" ] || [ "$BUILD_F
    export PATH="$DEVROOT/usr/bin/:$PATH"
    if [ "$BUILD_FOR" = "ios" ]; then
       SYSROOT=$XCODE_DEV/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk
+      OPTIONS="--host=$ARCH-apple-ios"
    elif [ "$BUILD_FOR" = "ios_simulator" ]; then
       SYSROOT=$XCODE_DEV/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk
+      OPTIONS="--host=$ARCH-apple-ios"
    elif [ "$BUILD_FOR" = "mac_catalyst" ]; then
       SYSROOT=$XCODE_DEV/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
       CFLAGS="-target x86_64-apple-ios15.0-macabi"
+      OPTIONS=""
+      #OPTIONS="--host=$ARCH-apple-mac-catalyst" May need something like this? Not sure
    fi
    export CFLAGS="$CFLAGS -arch $ARCH -Os -isysroot $SYSROOT -fembed-bitcode"
    export LDFLAGS="-arch $ARCH -isysroot $SYSROOT"
    echo "Building for $BUILD_FOR on $ARCH (sysroot=$SYSROOT)"
-   OPTIONS="\
+   OPTIONS="$OPTIONS \
 --with-secure-transport \
 --enable-static \
 --enable-ipv6 \
