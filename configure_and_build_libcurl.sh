@@ -9,12 +9,14 @@
 # 
 # Tested with tag curl-7_84_0
 #
-# Requirements:
+# NOTES:
 #  - install automake, autoconf, libtool. Use homebrew if you don't want to build and install manually
 #  - after installing you may need to symlink libtoolize:
 #      ln -s /usr/local/bin/glibtoolize /usr/local/bin/libtoolize
 #  - You need to run `autoreconf -fi` from the curl directory before calling this script,
 #    including when you change the platform or architecture
+#  - This is building libcurl as a static library and doesn't care about the actual curl application. 
+#    If you see linker errors then ignore them because they probably apply to curl - static libraries are not linked.
 #
 ########## BEGIN USER EDIT SECTION #############
 
@@ -27,14 +29,17 @@ srcDir=~/code/curl
 # ios_simulator
 # mac_catalyst
 #
-# Note: you can do this once for each, then use 'lipo' to create a single fat library:
+# Note: you can do this on/targetce for each, then use 'lipo' to create a single fat library:
 #  lipo -create libdevice.a libsimulator.a -output libcombined.a
-BUILD_FOR=ios_simulator
+BUILD_FOR=ios
 
 # Target architecture
 #  arm64
 #  x86_64
 ARCH=arm64
+
+# Minimum iOS version (if applicable)
+MIN_IOS=13.0
 
 ########## END USER EDIT SECTION #############
 
@@ -46,9 +51,11 @@ if [ "$BUILD_FOR" = "ios" ] || [ "$BUILD_FOR" = "ios_simulator" ] || [ "$BUILD_F
    export PATH="$DEVROOT/usr/bin/:$PATH"
    if [ "$BUILD_FOR" = "ios" ]; then
       SYSROOT=$XCODE_DEV/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk
+      CFLAGS="-target $ARCH-apple-ios$MIN_IOS"
       OPTIONS="--host=$ARCH-apple-ios"
    elif [ "$BUILD_FOR" = "ios_simulator" ]; then
       SYSROOT=$XCODE_DEV/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk
+      CFLAGS="-target $ARCH-apple-ios$MIN_IOS"
       OPTIONS="--host=$ARCH-apple-ios"
    elif [ "$BUILD_FOR" = "mac_catalyst" ]; then
       SYSROOT=$XCODE_DEV/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
@@ -66,6 +73,7 @@ if [ "$BUILD_FOR" = "ios" ] || [ "$BUILD_FOR" = "ios_simulator" ] || [ "$BUILD_F
 --without-zlib \
 --without-brotli \
 --disable-shared \
+--disable-debug \
 --disable-manual \
 --disable-ftp \
 --disable-file \

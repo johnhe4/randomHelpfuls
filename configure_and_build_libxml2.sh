@@ -25,6 +25,9 @@ BUILD_FOR=ios
 #  x86_64
 ARCH=arm64
 
+# Minimum iOS version (if applicable)
+MIN_IOS=13.0
+
 ########## END USER EDIT SECTION #############
 
 FEATURES="-DBUILD_SHARED_LIBS=OFF \
@@ -63,14 +66,33 @@ FEATURES="-DBUILD_SHARED_LIBS=OFF \
 OPTIONS=""
 BUILD_CMD="make -j16"
 if [ "$BUILD_FOR" = "ios" ]; then
-   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
-   BUILD_CMD="xcodebuild build -project libxml2.xcodeproj -scheme LibXml2 -configuration $BUILD_TYPE -destination generic/platform=iOS BUILD_FOR_DISTRIBUTION=YES BITCODE_GENERATION_MODE=bitcode"
+   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=$MIN_IOS"
+   BUILD_CMD="xcodebuild build \
+-project libxml2.xcodeproj \
+-scheme LibXml2 \
+-configuration $BUILD_TYPE \
+-destination generic/platform=iOS \
+BUILD_FOR_DISTRIBUTION=YES \
+BITCODE_GENERATION_MODE=bitcode"
 elif [ "$BUILD_FOR" = "ios_simulator" ]; then
-   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
-   BUILD_CMD="xcodebuild build -project libxml2.xcodeproj -scheme LibXml2 -configuration $BUILD_TYPE -sdk iphonesimulator -arch $ARCH BUILD_FOR_DISTRIBUTION=YES BITCODE_GENERATION_MODE=bitcode"
+   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=$MIN_IOS"
+   BUILD_CMD="xcodebuild build \
+-project libxml2.xcodeproj \
+-scheme LibXml2 \
+-configuration $BUILD_TYPE \
+-sdk iphonesimulator \
+-arch $ARCH \
+BUILD_FOR_DISTRIBUTION=YES \
+BITCODE_GENERATION_MODE=bitcode"
 elif [ "$BUILD_FOR" = "mac_catalyst" ]; then
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
-   BUILD_CMD="xcodebuild build -project libxml2.xcodeproj -scheme LibXml2 -configuration $BUILD_TYPE -destination \"platform=macOS,variant=Mac Catalyst,arch=$ARCH\" BUILD_FOR_DISTRIBUTION=YES BITCODE_GENERATION_MODE=bitcode"
+   BUILD_CMD="xcodebuild build \
+-project libxml2.xcodeproj \
+-scheme LibXml2 \
+-configuration $BUILD_TYPE \
+-destination \"platform=macOS,variant=Mac Catalyst,arch=$ARCH\" \
+BUILD_FOR_DISTRIBUTION=YES \
+BITCODE_GENERATION_MODE=bitcode"
 fi
 
 # Let's begin.

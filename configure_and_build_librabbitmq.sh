@@ -11,13 +11,16 @@ srcDir=~/code/rabbitmq-c
 
 # Feature selection, each one beginning with '-D' because it's CMAKE
 FEATURES=" \
+-DBUILD_SHARED_LIBS=OFF \
+-DBUILD_EXAMPLES=OFF \
+-DBUILD_TESTING=OFF \
 "
 
 # Build type
 #  Debug
 #  Release
 #  MinSizeRel
-BUILD_TYPE=Release
+BUILD_TYPE=MinSizeRel
 
 # Building for what?
 # unix
@@ -27,37 +30,56 @@ BUILD_TYPE=Release
 #
 # Note: you can do this once for each, then use 'lipo' to create a single fat library:
 #  lipo -create libdevice.a libsimulator.a -output libcombined.a
-BUILD_FOR=unix
+BUILD_FOR=ios_simulator
 
 # Target architecture
 #  arm64
 #  x86_64
-ARCH=x86_64
+ARCH=arm64
+
+# Minimum iOS version (if applicable)
+MIN_IOS=13.0
+
+# You may need to configure OpenSSL, but I didn't
+OPEN_SSL=""
 
 ########## END USER EDIT SECTION #############
 
 FEATURES="-DBUILD_SHARED_LIBS=OFF \
 -DBUILD_SHARED_LIBS=OFF \
 -DBUILD_TESTING=OFF \
+-DENABLE_SSL_SUPPORT=OFF \
 "
 
 OPTIONS=""
 BUILD_CMD="make -j16"
 if [ "$BUILD_FOR" = "ios" ]; then
-   FEATURES="$FEATURES -DCMAKE_C_FLAGS=\"-fembed-bitcode\" -DCMAKE_CXX_FLAGS=\"-fembed-bitcode\""
-   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
-   BUILD_CMD="xcodebuild build -project ZFP.xcodeproj -scheme zfp -configuration $BUILD_TYPE -destination generic/platform=iOS BUILD_FOR_DISTRIBUTION=YES"
+   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=$MIN_IOS"
+   BUILD_CMD="xcodebuild build \
+-project rabbitmq-c.xcodeproj \
+-scheme rabbitmq-static \
+-configuration $BUILD_TYPE \
+-destination generic/platform=iOS \
+BUILD_FOR_DISTRIBUTION=YES \
+BITCODE_GENERATION_MODE=bitcode" 
 elif [ "$BUILD_FOR" = "ios_simulator" ]; then
-   FEATURES="$FEATURES -DCMAKE_C_FLAGS=\"-fembed-bitcode\" -DCMAKE_CXX_FLAGS=\"-fembed-bitcode\""
-   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
-   BUILD_CMD="xcodebuild build -project ZFP.xcodeproj -scheme zfp -configuration $BUILD_TYPE -sdk iphonesimulator -arch $ARCH BUILD_FOR_DISTRIBUTION=YES"
+   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=$MIN_IOS"
+   BUILD_CMD="xcodebuild build \
+-project rabbitmq-c.xcodeproj \
+-scheme rabbitmq-static \
+-configuration $BUILD_TYPE \
+-sdk iphonesimulator \
+-arch $ARCH BUILD_FOR_DISTRIBUTION=YES \
+BITCODE_GENERATION_MODE=bitcode"
 elif [ "$BUILD_FOR" = "mac_catalyst" ]; then
-   FEATURES="$FEATURES -DCMAKE_C_FLAGS=\"-fembed-bitcode\" -DCMAKE_CXX_FLAGS=\"-fembed-bitcode\""
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
-   BUILD_CMD="xcodebuild build -project ZFP.xcodeproj -scheme zfp -configuration $BUILD_TYPE -destination \"platform=macOS,variant=Mac Catalyst,arch=$ARCH\" BUILD_FOR_DISTRIBUTION=YES"
-else
-   OPTIONS=""
-   BUILD_CMD="make -j"
+   BUILD_CMD="xcodebuild build \
+-project rabbitmq-c.xcodeproj \
+-scheme rabbitmq-static \
+-configuration $BUILD_TYPE \
+-destination \"platform=macOS,variant=Mac Catalyst,arch=$ARCH\" \
+BUILD_FOR_DISTRIBUTION=YES \
+BITCODE_GENERATION_MODE=bitcode"
 fi
 
 # Let's begin.
