@@ -9,6 +9,9 @@
 # Location of the source
 srcDir=~/code/rabbitmq-c
 
+# Destination directory
+destDir=~/code/libpropsync/iosLibs
+
 # Feature selection, each one beginning with '-D' because it's CMAKE
 FEATURES=" \
 -DBUILD_SHARED_LIBS=OFF \
@@ -25,17 +28,17 @@ BUILD_TYPE=MinSizeRel
 # Building for what?
 # unix
 # ios
-# ios_simulator
-# mac_catalyst
+# simulator
+# maccatalyst
 #
 # Note: you can do this once for each, then use 'lipo' to create a single fat library:
 #  lipo -create libdevice.a libsimulator.a -output libcombined.a
-BUILD_FOR=ios_simulator
+BUILD_FOR=maccatalyst
 
 # Target architecture
 #  arm64
 #  x86_64
-ARCH=arm64
+ARCH=x86_64
 
 # Minimum iOS version (if applicable)
 MIN_IOS=13.0
@@ -54,6 +57,8 @@ FEATURES="-DBUILD_SHARED_LIBS=OFF \
 OPTIONS=""
 BUILD_CMD="make -j16"
 if [ "$BUILD_FOR" = "ios" ]; then
+   SDK=iphoneos
+   export CFLAGS="$CFLAGS -fembed-bitcode"
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=$MIN_IOS"
    BUILD_CMD="xcodebuild build \
 -project rabbitmq-c.xcodeproj \
@@ -62,16 +67,21 @@ if [ "$BUILD_FOR" = "ios" ]; then
 -destination generic/platform=iOS \
 BUILD_FOR_DISTRIBUTION=YES \
 BITCODE_GENERATION_MODE=bitcode" 
-elif [ "$BUILD_FOR" = "ios_simulator" ]; then
+elif [ "$BUILD_FOR" = "simulator" ]; then
+   SDK=iphonesimulator
+   export CFLAGS="$CFLAGS -fembed-bitcode"
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=$MIN_IOS"
    BUILD_CMD="xcodebuild build \
 -project rabbitmq-c.xcodeproj \
 -scheme rabbitmq-static \
 -configuration $BUILD_TYPE \
--sdk iphonesimulator \
--arch $ARCH BUILD_FOR_DISTRIBUTION=YES \
+-sdk $SDK \
+-arch $ARCH \
+BUILD_FOR_DISTRIBUTION=YES \
 BITCODE_GENERATION_MODE=bitcode"
-elif [ "$BUILD_FOR" = "mac_catalyst" ]; then
+elif [ "$BUILD_FOR" = "maccatalyst" ]; then
+   SDK=maccatalyst
+   export CFLAGS="$CFLAGS -fembed-bitcode"
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
    BUILD_CMD="xcodebuild build \
 -project rabbitmq-c.xcodeproj \
@@ -93,6 +103,10 @@ cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE $OPTIONS $FEATURES
 
 # Build
 eval $BUILD_CMD
+
+# Copy
+echo "Copying librabbitmq_${BUILD_FOR}_$ARCH.a to $destDir"
+cp librabbitmq/$BUILD_TYPE-$SDK/librabbitmq.a $destDir/librabbitmq_${BUILD_FOR}_$ARCH.a
 
 # Finally, return to the original directory
 cd $originalDir

@@ -8,6 +8,9 @@
 # Location of the source
 srcDir=~/code/libzmq
 
+# Destination directory
+destDir=~/code/libpropsync/iosLibs
+
 # Build type
 #  Debug
 #  Release
@@ -22,8 +25,8 @@ FEATURES=" \
 
 # Building for what?
 #  ios
-#  ios_simulator
-#  mac_catalyst
+#  simulator
+#  maccatalyst
 BUILD_FOR=ios
 
 # Target architecture
@@ -52,6 +55,8 @@ FEATURES="$FEATURES \
 OPTIONS=""
 BUILD_CMD="make -j16"
 if [ "$BUILD_FOR" = "ios" ]; then
+   SDK=iphoneos
+   export CFLAGS="$CFLAGS -fembed-bitcode"
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=$MIN_IOS"
    BUILD_CMD="xcodebuild build \
 -project ZeroMQ.xcodeproj \
@@ -60,16 +65,21 @@ if [ "$BUILD_FOR" = "ios" ]; then
 -destination generic/platform=iOS \
 BUILD_FOR_DISTRIBUTION=YES \
 BITCODE_GENERATION_MODE=bitcode" 
-elif [ "$BUILD_FOR" = "ios_simulator" ]; then
+elif [ "$BUILD_FOR" = "simulator" ]; then
+   SDK=iphonesimulator
+   export CFLAGS="$CFLAGS -fembed-bitcode"
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=$MIN_IOS"
    BUILD_CMD="xcodebuild build \
 -project ZeroMQ.xcodeproj \
 -scheme libzmq-static \
 -configuration $BUILD_TYPE \
 -sdk iphonesimulator \
--arch $ARCH BUILD_FOR_DISTRIBUTION=YES \
+-arch $ARCH \
+BUILD_FOR_DISTRIBUTION=YES \
 BITCODE_GENERATION_MODE=bitcode"
-elif [ "$BUILD_FOR" = "mac_catalyst" ]; then
+elif [ "$BUILD_FOR" = "maccatalyst" ]; then
+   SDK=maccatalyst
+   export CFLAGS="$CFLAGS -fembed-bitcode"
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
    BUILD_CMD="xcodebuild build \
 -project ZeroMQ.xcodeproj \
@@ -93,9 +103,9 @@ cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE $OPTIONS $OPEN_SSL $FEATURES
 # Build
 eval $BUILD_CMD
 
+# Copy
+echo "Copying libzmq_${BUILD_FOR}_$ARCH.a to $destDir"
+cp lib/$BUILD_TYPE/libzmq.a $destDir/libzmq_${BUILD_FOR}_$ARCH.a
+
 # Finally, return to the original directory
 cd $originalDir
-
-# iOS note: you can do this once for simulator and device, then use 'lipo' to create a fat library:
-#  lipo -create libdevice.a libsimulator.a -output libcombined.a
-# This is no longer recommended though, should use xcframework instead

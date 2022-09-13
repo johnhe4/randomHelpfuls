@@ -8,6 +8,9 @@
 # Location of the source
 srcDir=~/code/libxml2
 
+# Destination directory
+destDir=~/code/libpropsync/iosLibs
+
 # Build type
 #  Debug
 #  Release
@@ -16,14 +19,14 @@ BUILD_TYPE=MinSizeRel
 
 # Building for what?
 # ios
-# ios_simulator
-# mac_catalyst
-BUILD_FOR=ios
+# simulator
+# maccatalyst
+BUILD_FOR=maccatalyst
 
 # Target architecture
 #  arm64
 #  x86_64
-ARCH=arm64
+ARCH=x86_64
 
 # Minimum iOS version (if applicable)
 MIN_IOS=13.0
@@ -66,6 +69,8 @@ FEATURES="-DBUILD_SHARED_LIBS=OFF \
 OPTIONS=""
 BUILD_CMD="make -j16"
 if [ "$BUILD_FOR" = "ios" ]; then
+   SDK=iphoneos
+   export CFLAGS="$CFLAGS -fembed-bitcode"
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=$MIN_IOS"
    BUILD_CMD="xcodebuild build \
 -project libxml2.xcodeproj \
@@ -74,7 +79,9 @@ if [ "$BUILD_FOR" = "ios" ]; then
 -destination generic/platform=iOS \
 BUILD_FOR_DISTRIBUTION=YES \
 BITCODE_GENERATION_MODE=bitcode"
-elif [ "$BUILD_FOR" = "ios_simulator" ]; then
+elif [ "$BUILD_FOR" = "simulator" ]; then
+   SDK=iphonesimulator
+   export CFLAGS="$CFLAGS -fembed-bitcode"
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=$MIN_IOS"
    BUILD_CMD="xcodebuild build \
 -project libxml2.xcodeproj \
@@ -84,7 +91,9 @@ elif [ "$BUILD_FOR" = "ios_simulator" ]; then
 -arch $ARCH \
 BUILD_FOR_DISTRIBUTION=YES \
 BITCODE_GENERATION_MODE=bitcode"
-elif [ "$BUILD_FOR" = "mac_catalyst" ]; then
+elif [ "$BUILD_FOR" = "maccatalyst" ]; then
+   SDK=maccatalyst
+   export CFLAGS="$CFLAGS -fembed-bitcode"
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
    BUILD_CMD="xcodebuild build \
 -project libxml2.xcodeproj \
@@ -106,6 +115,10 @@ cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE $OPTIONS $FEATURES
 
 # Build
 eval $BUILD_CMD
+
+# Copy
+echo "Copying libxml2_${BUILD_FOR}_$ARCH.a to $destDir"
+cp $BUILD_TYPE-$SDK/libxml2.a $destDir/libxml2_${BUILD_FOR}_$ARCH.a
 
 # Finally, return to the original directory
 cd $originalDir
