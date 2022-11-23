@@ -3,6 +3,8 @@
 # This is a helper script to configure and build libzfp.
 # Get the code then run this script:
 #   git clone git@github.com:alanxz/rabbitmq-c.git
+# I have always stayed on the master branch because the tagged versions have outdated
+# cmake configurations.
 
 ########## BEGIN USER EDIT SECTION #############
 
@@ -23,7 +25,7 @@ FEATURES=" \
 #  Debug
 #  Release
 #  MinSizeRel
-BUILD_TYPE=MinSizeRel
+BUILD_TYPE=Release
 
 # Building for what?
 # unix
@@ -33,7 +35,7 @@ BUILD_TYPE=MinSizeRel
 #
 # Note: you can do this once for each, then use 'lipo' to create a single fat library:
 #  lipo -create libdevice.a libsimulator.a -output libcombined.a
-BUILD_FOR=maccatalyst
+BUILD_FOR=unix
 
 # Target architecture
 #  arm64
@@ -90,6 +92,8 @@ elif [ "$BUILD_FOR" = "maccatalyst" ]; then
 -destination \"platform=macOS,variant=Mac Catalyst,arch=$ARCH\" \
 BUILD_FOR_DISTRIBUTION=YES \
 BITCODE_GENERATION_MODE=bitcode"
+else
+   OPTIONS="-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
 fi
 
 # Let's begin.
