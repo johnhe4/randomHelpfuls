@@ -54,9 +54,8 @@ elif [ "$BUILD_FOR" = "mac_catalyst" ]; then
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
    BUILD_CMD="xcodebuild build -project ZFP.xcodeproj -scheme zfp -configuration $BUILD_TYPE -destination \"platform=macOS,variant=Mac Catalyst,arch=$ARCH\" BUILD_FOR_DISTRIBUTION=YES"
 elif [ "$BUILD_FOR" = "visionos" ]; then
-   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
-   #BUILD_CMD="xcodebuild build -project ZFP.xcodeproj -scheme zfp -configuration $BUILD_TYPE -destination \"platform=visionOS\" BUILD_FOR_DISTRIBUTION=YES"
-   BUILD_CMD="xcodebuild build -project ZFP.xcodeproj -scheme zfp -configuration $BUILD_TYPE -destination generic/platform=visionOS BUILD_FOR_DISTRIBUTION=YES"
+   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=visionOS"
+   BUILD_CMD="xcodebuild build -project ZFP.xcodeproj -scheme zfp -configuration $BUILD_TYPE -destination \"generic/platform=xros\" BUILD_FOR_DISTRIBUTION=YES"
 fi
 
 # Let's begin.
