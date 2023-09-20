@@ -7,7 +7,7 @@
 ########## BEGIN USER EDIT SECTION #############
 
 # Location of the source
-srcDir=~/code/zfp
+srcDir=~/code/libzfp
 
 # I installed the dependcies manually, letting grpc build only itself
 # Feature selection, each one beginning with '-D' because it's CMAKE
@@ -24,23 +24,22 @@ BUILD_TYPE=MinSizeRel
 # ios
 # ios_simulator
 # mac_catalyst
+# visionos
 #
 # Note: you can do this once for each, then use 'lipo' to create a single fat library:
 #  lipo -create libdevice.a libsimulator.a -output libcombined.a
-BUILD_FOR=mac_catalyst
+BUILD_FOR=visionos
 
 # Target architecture
 #  arm64
 #  x86_64
-ARCH=x86_64
+ARCH=arm64
 
 ########## END USER EDIT SECTION #############
 
 FEATURES="-DBUILD_SHARED_LIBS=OFF \
 -DBUILD_TESTING=OFF \
--DBUILD_UTILITIES=OFF
--DCMAKE_C_FLAGS=\"-fembed-bitcode\" \
--DCMAKE_CXX_FLAGS=\"-fembed-bitcode\" \
+-DBUILD_UTILITIES=OFF \
 "
 
 OPTIONS=""
@@ -54,6 +53,10 @@ elif [ "$BUILD_FOR" = "ios_simulator" ]; then
 elif [ "$BUILD_FOR" = "mac_catalyst" ]; then
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
    BUILD_CMD="xcodebuild build -project ZFP.xcodeproj -scheme zfp -configuration $BUILD_TYPE -destination \"platform=macOS,variant=Mac Catalyst,arch=$ARCH\" BUILD_FOR_DISTRIBUTION=YES"
+elif [ "$BUILD_FOR" = "visionos" ]; then
+   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
+   #BUILD_CMD="xcodebuild build -project ZFP.xcodeproj -scheme zfp -configuration $BUILD_TYPE -destination \"platform=visionOS\" BUILD_FOR_DISTRIBUTION=YES"
+   BUILD_CMD="xcodebuild build -project ZFP.xcodeproj -scheme zfp -configuration $BUILD_TYPE -destination generic/platform=visionOS BUILD_FOR_DISTRIBUTION=YES"
 fi
 
 # Let's begin.
