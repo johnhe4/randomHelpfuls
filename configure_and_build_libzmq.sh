@@ -89,8 +89,8 @@ BUILD_FOR_DISTRIBUTION=YES"
 elif [ "$BUILD_FOR" = "visionos" ]; then
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=visionOS"
    BUILD_CMD="xcodebuild build \
--project ZeroMQ.xcodeproj \
--scheme libzmq-static \
+-project LibreSSL.xcodeproj \
+-scheme ssl \
 -configuration $BUILD_TYPE \
 -destination generic/platform=xros \
 BUILD_FOR_DISTRIBUTION=YES" 
@@ -123,7 +123,7 @@ pwd
 cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE $OPTIONS $OPEN_SSL $FEATURES
 
 # Build
-eval $BUILD_CMD
+#eval $BUILD_CMD
 
 # Copy
 # echo "Copying libzmq_${BUILD_FOR}_$ARCH.a to $destDir"

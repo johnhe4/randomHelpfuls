@@ -28,12 +28,14 @@ destDir=~/code/libpropsync/iosLibs
 # Building for what?
 # unix
 # ios
-# simulator
+# ios_simulator
 # maccatalyst
+# visionos
+# visionos_simulator
 #
-# Note: you can do this on/targetce for each, then use 'lipo' to create a single fat library:
+# Note: you can do this once for each, then use 'lipo' to create a single fat library:
 #  lipo -create libdevice.a libsimulator.a -output libcombined.a
-BUILD_FOR=simulator
+BUILD_FOR=visionos_simulator
 
 # Target architecture
 #  arm64
@@ -41,13 +43,13 @@ BUILD_FOR=simulator
 ARCH=arm64
 
 # Minimum iOS version (if applicable)
-MIN_IOS=13.0
+MIN_IOS=15.0
 
 ########## END USER EDIT SECTION #############
 
 BUILD_CMD="make -j"
 
-if [ "$BUILD_FOR" = "ios" ] || [ "$BUILD_FOR" = "simulator" ] || [ "$BUILD_FOR" = "maccatalyst" ]; then
+if [ "$BUILD_FOR" = "ios" ] || [ "$BUILD_FOR" = "ios_simulator" ] || [ "$BUILD_FOR" = "maccatalyst" ] || [ "$BUILD_FOR" = "visionos" ] || [ "$BUILD_FOR" = "visionos_simulator" ]; then
    XCODE_DEV="$(xcode-select -p)"
    export DEVROOT="$XCODE_DEV/Toolchains/XcodeDefault.xctoolchain"
    export PATH="$DEVROOT/usr/bin/:$PATH"
@@ -55,17 +57,24 @@ if [ "$BUILD_FOR" = "ios" ] || [ "$BUILD_FOR" = "simulator" ] || [ "$BUILD_FOR" 
       SYSROOT=$XCODE_DEV/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk
       CFLAGS="-target $ARCH-apple-ios$MIN_IOS"
       OPTIONS="--host=$ARCH-apple-ios"
-   elif [ "$BUILD_FOR" = "simulator" ]; then
+   elif [ "$BUILD_FOR" = "ios_simulator" ]; then
       SYSROOT=$XCODE_DEV/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk
-      #CFLAGS="-target $ARCH-apple-ios$MIN_IOS"
       OPTIONS="--host=$ARCH-apple-darwin"
    elif [ "$BUILD_FOR" = "maccatalyst" ]; then
       SYSROOT=$XCODE_DEV/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
       CFLAGS="-target $ARCH-apple-ios15.0-macabi"
       OPTIONS=""
       #OPTIONS="--host=$ARCH-apple-mac-catalyst" May need something like this? Not sure
+   elif [ "$BUILD_FOR" = "visionos" ]; then
+      SYSROOT=$XCODE_DEV/Platforms/XROS.platform/Developer/SDKs/XROS.sdk
+      #CFLAGS="-target $ARCH-apple-xros$MIN_IOS"
+      CFLAGS="-target $ARCH-apple-xros"
+      OPTIONS="--host=$ARCH-apple-ios"
+   elif [ "$BUILD_FOR" = "visionos_simulator" ]; then
+      SYSROOT=$XCODE_DEV/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator.sdk
+      OPTIONS="--host=$ARCH-apple-darwin"
    fi
-   export CFLAGS="$CFLAGS -arch $ARCH -Os -isysroot $SYSROOT -fembed-bitcode"
+   export CFLAGS="$CFLAGS -arch $ARCH -Os -isysroot $SYSROOT"
    export LDFLAGS="-arch $ARCH -isysroot $SYSROOT"
    echo "Building for $BUILD_FOR on $ARCH (sysroot=$SYSROOT)"
    OPTIONS="$OPTIONS \
@@ -103,8 +112,9 @@ originalDir=`pwd`
 cd $srcDir
 
 # Start from scratch
-autoreconf -fi
 make clean || true
+rm configure
+autoreconf -fi
 
 # Run the configure script
 ./configure $OPTIONS
@@ -113,8 +123,8 @@ make clean || true
 $BUILD_CMD || true
 
 # Copy
-echo "Copying libcurl_${BUILD_FOR}_$ARCH.a to $destDir"
-cp lib/.libs/libcurl.a $destDir/libcurl_${BUILD_FOR}_$ARCH.a
+#echo "Copying libcurl_${BUILD_FOR}_$ARCH.a to $destDir"
+#cp lib/.libs/libcurl.a $destDir/libcurl_${BUILD_FOR}_$ARCH.a
 
 # Finally, return to the original directory
 cd $originalDir
