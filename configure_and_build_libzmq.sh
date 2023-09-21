@@ -24,15 +24,19 @@ FEATURES=" \
 "
 
 # Building for what?
-#  ios
-#  simulator
-#  maccatalyst
-BUILD_FOR=ios
+# macos
+# ios
+# ios_simulator
+# maccatalyst
+# android
+# visionos
+# visionos_simulator
+BUILD_FOR=visionos_simulator
 
 # Target architecture
 #  arm64
 #  x86_64
-ARCH=arm64
+ARCH=x86_64
 
 # Minimum iOS version (if applicable)
 MIN_IOS=13.0
@@ -56,18 +60,15 @@ OPTIONS=""
 BUILD_CMD="make -j16"
 if [ "$BUILD_FOR" = "ios" ]; then
    SDK=iphoneos
-   export CFLAGS="$CFLAGS -fembed-bitcode"
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=$MIN_IOS"
    BUILD_CMD="xcodebuild build \
 -project ZeroMQ.xcodeproj \
 -scheme libzmq-static \
 -configuration $BUILD_TYPE \
 -destination generic/platform=iOS \
-BUILD_FOR_DISTRIBUTION=YES \
-BITCODE_GENERATION_MODE=bitcode" 
-elif [ "$BUILD_FOR" = "simulator" ]; then
+BUILD_FOR_DISTRIBUTION=YES" 
+elif [ "$BUILD_FOR" = "ios_simulator" ]; then
    SDK=iphonesimulator
-   export CFLAGS="$CFLAGS -fembed-bitcode"
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=$MIN_IOS"
    BUILD_CMD="xcodebuild build \
 -project ZeroMQ.xcodeproj \
@@ -75,19 +76,40 @@ elif [ "$BUILD_FOR" = "simulator" ]; then
 -configuration $BUILD_TYPE \
 -sdk iphonesimulator \
 -arch $ARCH \
-BUILD_FOR_DISTRIBUTION=YES \
-BITCODE_GENERATION_MODE=bitcode"
+BUILD_FOR_DISTRIBUTION=YES"
 elif [ "$BUILD_FOR" = "maccatalyst" ]; then
    SDK=maccatalyst
-   export CFLAGS="$CFLAGS -fembed-bitcode"
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
    BUILD_CMD="xcodebuild build \
 -project ZeroMQ.xcodeproj \
 -scheme libzmq-static \
 -configuration $BUILD_TYPE \
 -destination \"platform=macOS,variant=Mac Catalyst,arch=$ARCH\" \
-BUILD_FOR_DISTRIBUTION=YES \
-BITCODE_GENERATION_MODE=bitcode"
+BUILD_FOR_DISTRIBUTION=YES"
+elif [ "$BUILD_FOR" = "visionos" ]; then
+   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=visionOS"
+   BUILD_CMD="xcodebuild build \
+-project ZeroMQ.xcodeproj \
+-scheme libzmq-static \
+-configuration $BUILD_TYPE \
+-destination generic/platform=xros \
+BUILD_FOR_DISTRIBUTION=YES" 
+elif [ "$BUILD_FOR" = "visionos_simulator" ]; then
+   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=visionOS"
+   BUILD_CMD="xcodebuild build \
+-project ZeroMQ.xcodeproj \
+-scheme libzmq-static \
+-configuration $BUILD_TYPE \
+-sdk xrsimulator \
+-arch $ARCH \
+BUILD_FOR_DISTRIBUTION=YES"
+elif [ "$BUILD_FOR" = "android" ]; then
+   OPTIONS="\
+-DCMAKE_SYSTEM_NAME=Android \
+-DCMAKE_SYSTEM_VERSION=32 \
+-DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
+-DCMAKE_PREFIX_PATH=/usr/local \
+"
 fi
 
 # Let's begin.
@@ -104,8 +126,8 @@ cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE $OPTIONS $OPEN_SSL $FEATURES
 eval $BUILD_CMD
 
 # Copy
-echo "Copying libzmq_${BUILD_FOR}_$ARCH.a to $destDir"
-cp lib/$BUILD_TYPE/libzmq.a $destDir/libzmq_${BUILD_FOR}_$ARCH.a
+# echo "Copying libzmq_${BUILD_FOR}_$ARCH.a to $destDir"
+# cp lib/$BUILD_TYPE/libzmq.a $destDir/libzmq_${BUILD_FOR}_$ARCH.a
 
 # Finally, return to the original directory
 cd $originalDir

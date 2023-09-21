@@ -25,15 +25,16 @@ BUILD_TYPE=MinSizeRel
 # ios_simulator
 # mac_catalyst
 # visionos
+# visionos_simulator
 #
 # Note: you can do this once for each, then use 'lipo' to create a single fat library:
 #  lipo -create libdevice.a libsimulator.a -output libcombined.a
-BUILD_FOR=visionos
+BUILD_FOR=visionos_simulator
 
 # Target architecture
 #  arm64
 #  x86_64
-ARCH=arm64
+ARCH=x86_64
 
 ########## END USER EDIT SECTION #############
 
@@ -56,6 +57,9 @@ elif [ "$BUILD_FOR" = "mac_catalyst" ]; then
 elif [ "$BUILD_FOR" = "visionos" ]; then
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=visionOS"
    BUILD_CMD="xcodebuild build -project ZFP.xcodeproj -scheme zfp -configuration $BUILD_TYPE -destination \"generic/platform=xros\" BUILD_FOR_DISTRIBUTION=YES"
+elif [ "$BUILD_FOR" = "visionos_simulator" ]; then
+   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=visionOS"
+   BUILD_CMD="xcodebuild build -project ZFP.xcodeproj -scheme zfp -configuration $BUILD_TYPE -sdk xrsimulator -arch $ARCH BUILD_FOR_DISTRIBUTION=YES"
 fi
 
 # Let's begin.
