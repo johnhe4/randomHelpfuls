@@ -25,7 +25,7 @@ BUILD_TYPE=MinSizeRel
 # android
 # visionos
 # visionos_simulator
-BUILD_FOR=ios_simulator
+BUILD_FOR=maccatalyst
 
 # Target architecture
 #  arm64
@@ -66,8 +66,8 @@ elif [ "$BUILD_FOR" = "maccatalyst" ]; then
    SDK=maccatalyst
    OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
    BUILD_CMD="xcodebuild build \
--project ZeroMQ.xcodeproj \
--scheme libzmq-static \
+-project yaml.xcodeproj \
+-scheme yaml \
 -configuration $BUILD_TYPE \
 -destination \"platform=macOS,variant=Mac Catalyst,arch=$ARCH\" \
 BUILD_FOR_DISTRIBUTION=YES"
