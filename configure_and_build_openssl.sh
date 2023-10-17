@@ -47,7 +47,7 @@ fi
 originalDir=`pwd`
 cd $srcDir
 
-if [ "$BUILD_FOR" = "iphoneos-cross" ]; then # TODO: UPDATE THIS, probably all wrong. look at the macos option
+if [ "$BUILD_FOR" = "iphoneos-cross" ]; then # TODO: UPDATE THIS, probably all wrong. look at the macos option. Also look at https://wiki.openssl.org/index.php/Compilation_and_Installation#OS_X
    DEVELOPER=`xcode-select -print-path`
    PLATFORM=iPhoneOS
    #TARGET=ios64-cross-arm64
@@ -59,7 +59,7 @@ if [ "$BUILD_FOR" = "iphoneos-cross" ]; then # TODO: UPDATE THIS, probably all w
    export CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
    export CROSS_SDK="${PLATFORM}${SDK_VERSION}.sdk"
    OPTIONS="$TARGET no-async no-shared enable-ec_nistp_64_gcc_128"
-elif [ "$BUILD_FOR" = "visionos" ]; then # TODO: UPDATE THIS, probably all wrong. look at the macos option
+elif [ "$BUILD_FOR" = "visionos" ]; then # TODO: UPDATE THIS, probably all wrong. look at the macos option. Also look at https://wiki.openssl.org/index.php/Compilation_and_Installation#OS_X
    DEVELOPER=`xcode-select -print-path`
    PLATFORM=XROS
    #TARGET=ios64-cross-arm64
