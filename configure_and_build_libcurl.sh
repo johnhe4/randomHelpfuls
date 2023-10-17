@@ -22,10 +22,8 @@
 # Location of the source
 srcDir=~/code/curl
 
-# Destination directory
-destDir=~/code/libpropsync/iosLibs
-
 # Building for what?
+# macos
 # unix
 # ios
 # ios_simulator
@@ -35,7 +33,7 @@ destDir=~/code/libpropsync/iosLibs
 #
 # Note: you can do this once for each, then use 'lipo' to create a single fat library:
 #  lipo -create libdevice.a libsimulator.a -output libcombined.a
-BUILD_FOR=visionos_simulator
+BUILD_FOR=macos
 
 # Target architecture
 #  arm64
@@ -45,9 +43,36 @@ ARCH=arm64
 # Minimum iOS version (if applicable)
 MIN_IOS=15.0
 
-########## END USER EDIT SECTION #############
+# Installation prefix (if applicable)
+INSTALL_PREFIX=/usr/local/macos_arm64
 
-BUILD_CMD="make -j"
+########## END USER EDIT SECTION #############
+OPTIONS="--with-secure-transport \
+--enable-ipv6 \
+--without-zlib \
+--without-brotli \
+--disable-debug \
+--disable-manual \
+--disable-ftp \
+--disable-file \
+--disable-ldap \
+--disable-ldaps \
+--disable-rtsp \
+--disable-proxy \
+--disable-dict \
+--disable-telnet \
+--disable-tftp \
+--disable-pop3 \
+--disable-imap \
+--disable-smtp \
+--disable-gopher \
+--disable-sspi \
+--disable-smb \
+"
+
+if [ -n "$INSTALL_PREFIX" ]; then
+   OPTIONS="$OPTIONS --prefix=$INSTALL_PREFIX"
+fi
 
 if [ "$BUILD_FOR" = "ios" ] || [ "$BUILD_FOR" = "ios_simulator" ] || [ "$BUILD_FOR" = "maccatalyst" ] || [ "$BUILD_FOR" = "visionos" ] || [ "$BUILD_FOR" = "visionos_simulator" ]; then
    XCODE_DEV="$(xcode-select -p)"
@@ -77,34 +102,18 @@ if [ "$BUILD_FOR" = "ios" ] || [ "$BUILD_FOR" = "ios_simulator" ] || [ "$BUILD_F
    export CFLAGS="$CFLAGS -arch $ARCH -Os -isysroot $SYSROOT"
    export LDFLAGS="-arch $ARCH -isysroot $SYSROOT"
    echo "Building for $BUILD_FOR on $ARCH (sysroot=$SYSROOT)"
-   OPTIONS="$OPTIONS \
---with-secure-transport \
---enable-static \
---enable-ipv6 \
---without-zlib \
---without-brotli \
---disable-shared \
---disable-debug \
---disable-manual \
---disable-ftp \
---disable-file \
---disable-ldap \
---disable-ldaps \
---disable-rtsp \
---disable-proxy \
---disable-dict \
---disable-telnet \
---disable-tftp \
---disable-pop3 \
---disable-imap \
---disable-smtp \
---disable-gopher \
---disable-sspi \
---disable-smb \
---disable-unix-sockets \
-"
+   OPTIONS="$OPTIONS --enable-static --disable-shared --disable-unix-sockets"
+elif [ "$BUILD_FOR" = "macos" ]; then
+   XCODE_DEV="$(xcode-select -p)"
+   export DEVROOT="$XCODE_DEV/Toolchains/XcodeDefault.xctoolchain"
+   export PATH="$DEVROOT/usr/bin/:$PATH"
+   SYSROOT=$XCODE_DEV/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+   CFLAGS="-target $ARCH-apple-darwin"
+   BUILD_CMD="make -j"
+   OPTIONS="$OPTIONS"
 else
-   OPTIONS=""   
+   BUILD_CMD="make -j"
+   OPTIONS="$OPTIONS"
 fi
 
 # Let's begin.
@@ -121,10 +130,6 @@ autoreconf -fi
 
 # Build. Don't worry about errors, we don't care about curl, just libcurl
 $BUILD_CMD || true
-
-# Copy
-#echo "Copying libcurl_${BUILD_FOR}_$ARCH.a to $destDir"
-#cp lib/.libs/libcurl.a $destDir/libcurl_${BUILD_FOR}_$ARCH.a
 
 # Finally, return to the original directory
 cd $originalDir
