@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# An possible alternate to this home-made script is:
-#   https://github.com/jasonacox/Build-OpenSSL-cURL
-#
 # This is a helper script to configure and build libcurl.
 # Get the code then run this script:
 #   git clone git@github.com:curl/curl.git
@@ -22,32 +19,38 @@
 # Location of the source
 srcDir=~/code/curl
 
-# Building for what?
-# macos
-# unix
-# ios
-# ios_simulator
-# maccatalyst
-# visionos
-# visionos_simulator
-#
-# Note: you can do this once for each, then use 'lipo' to create a single fat library:
-#  lipo -create libdevice.a libsimulator.a -output libcombined.a
-BUILD_FOR=macos
-
-# Target architecture
-#  arm64
-#  x86_64
-ARCH=arm64
-
 # Minimum iOS version (if applicable)
 MIN_IOS=15.0
 
-# Installation prefix (if applicable)
-INSTALL_PREFIX=/usr/local/macos_arm64
-
 ########## END USER EDIT SECTION #############
-OPTIONS="--with-secure-transport \
+
+if [ $# -lt 2 ]; then
+   echo " <this_script>.sh host arch prefix"
+   echo ""
+   echo " host (required):"
+   echo "   macos"
+   echo "   macoscatalyst"
+   echo "   iphoneos"
+   echo "   iphonesimulator"
+   echo "   xros"
+   echo "   xrsimulator"
+   echo ""
+   echo " arch (required):"
+   echo "   x86_64"
+   echo "   arm64"
+   echo ""
+   echo " prefix (default: /usr/local/{host}_{arch})"
+fi
+BUILD_FOR=$1
+ARCH=$2
+INSTALL_PREFIX=$3
+if [ -z "$INSTALL_PREFIX" ]; then
+   INSTALL_PREFIX="/usr/local/${BUILD_FOR}_$ARCH"
+fi
+
+OPTIONS=" \
+--with-openssl \
+--without-secure-transport \
 --enable-ipv6 \
 --without-zlib \
 --without-brotli \
@@ -68,51 +71,49 @@ OPTIONS="--with-secure-transport \
 --disable-gopher \
 --disable-sspi \
 --disable-smb \
+--enable-static=yes \
+--enable-shared=no \
+--enable-websockets \
+--without-zstd \
 "
 
 if [ -n "$INSTALL_PREFIX" ]; then
    OPTIONS="$OPTIONS --prefix=$INSTALL_PREFIX"
+   export PKG_CONFIG_PATH="$INSTALL_PREFIX/lib/pkgconfig"
 fi
 
-if [ "$BUILD_FOR" = "ios" ] || [ "$BUILD_FOR" = "ios_simulator" ] || [ "$BUILD_FOR" = "maccatalyst" ] || [ "$BUILD_FOR" = "visionos" ] || [ "$BUILD_FOR" = "visionos_simulator" ]; then
+BUILD_CMD="make -j"
+if [ "$BUILD_FOR" = "iphoneos" ] || [ "$BUILD_FOR" = "iphonesimulator" ] || [ "$BUILD_FOR" = "macoscatalyst" ] || [ "$BUILD_FOR" = "xros" ] || [ "$BUILD_FOR" = "xrsimulator" ]; then
    XCODE_DEV="$(xcode-select -p)"
    export DEVROOT="$XCODE_DEV/Toolchains/XcodeDefault.xctoolchain"
    export PATH="$DEVROOT/usr/bin/:$PATH"
-   if [ "$BUILD_FOR" = "ios" ]; then
+   if [ "$BUILD_FOR" = "iphoneos" ]; then
       SYSROOT=$XCODE_DEV/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk
       CFLAGS="-target $ARCH-apple-ios$MIN_IOS"
-      OPTIONS="--host=$ARCH-apple-ios"
-   elif [ "$BUILD_FOR" = "ios_simulator" ]; then
+      OPTIONS="$OPTIONS --host=$ARCH-apple-ios"
+   elif [ "$BUILD_FOR" = "iphonesimulator" ]; then
       SYSROOT=$XCODE_DEV/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk
-      OPTIONS="--host=$ARCH-apple-darwin"
-   elif [ "$BUILD_FOR" = "maccatalyst" ]; then
+      OPTIONS="$OPTIONS --host=$ARCH-apple-darwin"
+   elif [ "$BUILD_FOR" = "macoscatalyst" ]; then
       SYSROOT=$XCODE_DEV/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
       CFLAGS="-target $ARCH-apple-ios15.0-macabi"
-      OPTIONS=""
-      #OPTIONS="--host=$ARCH-apple-mac-catalyst" May need something like this? Not sure
-   elif [ "$BUILD_FOR" = "visionos" ]; then
+      OPTIONS="$OPTIONS"
+   elif [ "$BUILD_FOR" = "xros" ]; then
       SYSROOT=$XCODE_DEV/Platforms/XROS.platform/Developer/SDKs/XROS.sdk
-      #CFLAGS="-target $ARCH-apple-xros$MIN_IOS"
       CFLAGS="-target $ARCH-apple-xros"
-      OPTIONS="--host=$ARCH-apple-ios"
-   elif [ "$BUILD_FOR" = "visionos_simulator" ]; then
+      OPTIONS="$OPTIONS --host=$ARCH-apple-ios"
+   elif [ "$BUILD_FOR" = "xrsimulator" ]; then
       SYSROOT=$XCODE_DEV/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator.sdk
-      OPTIONS="--host=$ARCH-apple-darwin"
+      OPTIONS="$OPTIONS --host=$ARCH-apple-darwin"
    fi
-   export CFLAGS="$CFLAGS -arch $ARCH -Os -isysroot $SYSROOT"
-   export LDFLAGS="-arch $ARCH -isysroot $SYSROOT"
+   CFLAGS="$CFLAGS -arch $ARCH -Os -isysroot $SYSROOT"
+   LDFLAGS="-arch $ARCH -isysroot $SYSROOT"
    echo "Building for $BUILD_FOR on $ARCH (sysroot=$SYSROOT)"
-   OPTIONS="$OPTIONS --enable-static --disable-shared --disable-unix-sockets"
+   OPTIONS="$OPTIONS --disable-unix-sockets"
 elif [ "$BUILD_FOR" = "macos" ]; then
-   XCODE_DEV="$(xcode-select -p)"
-   export DEVROOT="$XCODE_DEV/Toolchains/XcodeDefault.xctoolchain"
-   export PATH="$DEVROOT/usr/bin/:$PATH"
-   SYSROOT=$XCODE_DEV/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
-   CFLAGS="-target $ARCH-apple-darwin"
-   BUILD_CMD="make -j"
-   OPTIONS="$OPTIONS"
+   CFLAGS="-target $ARCH-apple-darwin"   
+   OPTIONS="$OPTIONS --host $ARCH-apple-darwin"
 else
-   BUILD_CMD="make -j"
    OPTIONS="$OPTIONS"
 fi
 
@@ -120,9 +121,11 @@ fi
 originalDir=`pwd`
 cd $srcDir
 
+export CFLAGS="$CFLAGS"
+export LDFLAGS="$LDFLAGS"
+
 # Start from scratch
-make clean || true
-rm configure
+rm -f configure
 autoreconf -fi
 
 # Run the configure script
@@ -130,6 +133,8 @@ autoreconf -fi
 
 # Build. Don't worry about errors, we don't care about curl, just libcurl
 $BUILD_CMD || true
+
+sudo make install
 
 # Finally, return to the original directory
 cd $originalDir
