@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This is a helper script to configure and build nlohmann json.
+# This is a helper script to configure and build flatbuffers.
 #   git clone https://github.com/google/flatbuffers.git
 
 ########## BEGIN USER EDIT SECTION #############
@@ -12,33 +12,41 @@ srcDir=~/code/flatbuffers
 #  Debug
 #  Release
 #  MinSizeRel
-BUILD_TYPE=Release
-
-# Building for what?
-# macos
-# ios
-# ios_simulator
-# maccatalyst
-# android
-# visionos
-# visionos_simulator
-BUILD_FOR=macos
-
-# Target architecture
-#  arm64
-#  x86_64
-ARCH=arm64
+BUILD_TYPE=MinSizeRel
 
 # Minimum iOS version (if applicable)
 MIN_IOS=15.0
 
-# Installation prefix (if applicable)
-INSTALL_PREFIX=/usr/local/macos_arm64
-
 ########## END USER EDIT SECTION #############
-OPTIONS="$OPTIONS \
+
+if [ $# -lt 2 ]; then
+   echo " <this_script>.sh host arch prefix"
+   echo ""
+   echo " host (required):"
+   echo "   macos"
+   echo "   macoscatalyst"
+   echo "   iphoneos"
+   echo "   iphonesimulator"
+   echo "   xros"
+   echo "   xrsimulator"
+   echo ""
+   echo " arch (required):"
+   echo "   x86_64"
+   echo "   arm64"
+   echo ""
+   echo " prefix (default: /usr/local/{host}_{arch})"
+fi
+BUILD_FOR=$1
+ARCH=$2
+INSTALL_PREFIX=$3
+if [ -z "$INSTALL_PREFIX" ]; then
+   INSTALL_PREFIX="/usr/local/${BUILD_FOR}_$ARCH"
+fi
+
+OPTIONS=" \
 -DFLATBUFFERS_BUILD_TESTS=OFF \
 -DFLATBUFFERS_ENABLE_PCH=ON \
+-DFLATBUFFERS_BUILD_FLATC=OFF \
 "
 
 if [ -n "$INSTALL_PREFIX" ]; then
@@ -46,57 +54,23 @@ if [ -n "$INSTALL_PREFIX" ]; then
 fi
 
 BUILD_CMD="make -j16"
-if [ "$BUILD_FOR" = "ios" ]; then
-   SDK=iphoneos
-   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=$MIN_IOS"
-   BUILD_CMD="xcodebuild build \
--project ZeroMQ.xcodeproj \
--scheme libzmq-static \
--configuration $BUILD_TYPE \
--destination generic/platform=iOS \
-BUILD_FOR_DISTRIBUTION=YES" 
-elif [ "$BUILD_FOR" = "ios_simulator" ]; then
-   SDK=iphonesimulator
-   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=$MIN_IOS"
-   BUILD_CMD="xcodebuild build \
--project ZeroMQ.xcodeproj \
--scheme libzmq-static \
--configuration $BUILD_TYPE \
--sdk iphonesimulator \
--arch $ARCH \
-BUILD_FOR_DISTRIBUTION=YES"
-elif [ "$BUILD_FOR" = "maccatalyst" ]; then
-   SDK=maccatalyst
-   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=iOS"
-   BUILD_CMD="xcodebuild build \
--project ZeroMQ.xcodeproj \
--scheme libzmq-static \
--configuration $BUILD_TYPE \
--destination \"platform=macOS,variant=Mac Catalyst,arch=$ARCH\" \
-BUILD_FOR_DISTRIBUTION=YES"
-elif [ "$BUILD_FOR" = "visionos" ]; then
-   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=visionOS"
-   BUILD_CMD="xcodebuild build \
--project ZeroMQ.xcodeproj \
--scheme libzmq-static \
--configuration $BUILD_TYPE \
--destination generic/platform=xros \
-BUILD_FOR_DISTRIBUTION=YES" 
-elif [ "$BUILD_FOR" = "visionos_simulator" ]; then
-   OPTIONS="-G Xcode -DCMAKE_SYSTEM_NAME=visionOS"
-   BUILD_CMD="xcodebuild build \
--project ZeroMQ.xcodeproj \
--scheme libzmq-static \
--configuration $BUILD_TYPE \
--sdk xrsimulator \
--arch $ARCH \
-BUILD_FOR_DISTRIBUTION=YES"
+if [ "$BUILD_FOR" = "iphoneos" ] || [ "$BUILD_FOR" = "iphonesimulator" ] || [ "$BUILD_FOR" = "macoscatalyst" ] || [ "$BUILD_FOR" = "xros" ] || [ "$BUILD_FOR" = "xrsimulator" ]; then
+   XCODE_DEV="$(xcode-select -p)"
+   if [ "$BUILD_FOR" = "iphoneos" ]; then
+      OPTIONS="$OPTIONS -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=$MIN_IOS -DCMAKE_OSX_ARCHITECTURES=$ARCH"
+   elif [ "$BUILD_FOR" = "iphonesimulator" ]; then
+      SYSROOT=$XCODE_DEV/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk
+      OPTIONS="$OPTIONS -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=$MIN_IOS -DCMAKE_OSX_ARCHITECTURES=$ARCH -DCMAKE_OSX_SYSROOT=$SYSROOT"
+   elif [ "$BUILD_FOR" = "macoscatalyst" ]; then
+      echo NOT IMPLEMENTED
+   elif [ "$BUILD_FOR" = "xros" ]; then
+      OPTIONS="$OPTIONS -DCMAKE_SYSTEM_NAME=visionOS -DCMAKE_OSX_ARCHITECTURES=$ARCH"
+   elif [ "$BUILD_FOR" = "xrsimulator" ]; then
+      SYSROOT=$XCODE_DEV/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator.sdk
+      OPTIONS="$OPTIONS -DCMAKE_SYSTEM_NAME=visionOS -DCMAKE_OSX_ARCHITECTURES=$ARCH -DCMAKE_OSX_SYSROOT=$SYSROOT"
+   fi
 elif [ "$BUILD_FOR" = "android" ]; then
-   OPTIONS="\
--DCMAKE_SYSTEM_NAME=Android \
--DCMAKE_SYSTEM_VERSION=32 \
--DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
--DCMAKE_PREFIX_PATH=/usr/local"
+   OPTIONS="-DCMAKE_SYSTEM_NAME=Android -DCMAKE_SYSTEM_VERSION=32 -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a -DCMAKE_PREFIX_PATH=/usr/local"
 elif [ "$BUILD_FOR" = "macos" ]; then
    OPTIONS="$OPTIONS -DCMAKE_OSX_ARCHITECTURES=$ARCH"
 else
@@ -116,7 +90,8 @@ rm -f CMakeCache.txt
 cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE $OPTIONS
 
 # Build
-eval $BUILD_CMD
+$BUILD_CMD
+sudo make install
 
 # Finally, return to the original directory
 cd $originalDir
