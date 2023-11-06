@@ -52,15 +52,12 @@ OPTIONS=" \
 -DENABLE_SSL_SUPPORT=ON \
 -DOPENSSL_ENGINE=OFF \
 -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
--DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH \
--DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH \
--DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH \
 "
 
 # These options are critical for iOS, visionOS, and Android. For reasons unknown to me,
 # cmake completely ignores any prefix path given unless these are explicitly specified.
 #  https://stackoverflow.com/questions/65494246/cmakes-find-package-ignores-the-paths-option-when-building-for-ios
-OPTIONS=" $OPTIONS \
+OPTIONS="$OPTIONS \
 -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH \
 -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH \
 -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH \

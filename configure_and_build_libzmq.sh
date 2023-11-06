@@ -43,6 +43,8 @@ if [ -z "$INSTALL_PREFIX" ]; then
    INSTALL_PREFIX="/usr/local/${BUILD_FOR}_$ARCH"
 fi
 
+# I would love to use zeromq websockets, but that implementation depends on GnuTLS instead of openssl.
+# GnuTLS has the LGPL library and that's pretty much a non-starter for me.
 OPTIONS=" \
 -DZMQ_BUILD_FRAMEWORK=OFF \
 -DBUILD_SHARED=OFF \
@@ -50,8 +52,9 @@ OPTIONS=" \
 -DZMQ_BUILD_TESTS=OFF \
 -DWITH_DOCS=OFF \
 -DWITH_LIBSODIUM=OFF \
--DWITH_PERF_TOOL=OFF \
 -DWITH_LIBBSD=OFF \
+-DENABLE_CURVE=OFF \
+-DENABLE_WS=OFF \
 "
 
 if [ -n "$INSTALL_PREFIX" ]; then
