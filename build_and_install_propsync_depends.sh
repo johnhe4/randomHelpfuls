@@ -1,9 +1,14 @@
 #!/bin/bash
 
 # This is a helper script to configure and build propsync dependencies for all supported Apple devices.
-# A common approach is to set the prefix to /usr/local for the native OS/arch of your machine, and leave all others to default.
+# 1. Ensure you have randomHelpfuls cloned on your machine:
+#   git clone https://github.com/johnhe4/randomHelpfuls.git
+# 2. Set SCRIPTS_DIR to the randomHelpfuls location
+# 3. Uncomment the rows in each dependency for your target platform/architecture.
+# 4. (Optional). You may provide a 3rd argument representing the prefix (default is /usr/local).
+# 5. Run the script. Libraries should install to `{prefix}/platform_architecture`
 
-# Location of the source
+# Location of the source repository
 SCRIPTS_DIR=~/code/randomHelpfuls
 
 # json
