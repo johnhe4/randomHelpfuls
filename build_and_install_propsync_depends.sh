@@ -92,5 +92,5 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_libzmq.sh xrsimulator arm64
 
 # replxx (not for mobile devices)
-$SCRIPTS_DIR/configure_and_build_libreplxx.sh macos arm64
-#$SCRIPTS_DIR/configure_and_build_libreplxx.sh macos x86_64
+# $SCRIPTS_DIR/configure_and_build_libreplxx.sh macos arm64
+# $SCRIPTS_DIR/configure_and_build_libreplxx.sh macos x86_64
