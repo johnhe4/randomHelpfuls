@@ -35,8 +35,93 @@ if [ -z "$INSTALL_PREFIX" ]; then
    INSTALL_PREFIX="/usr/local/${BUILD_FOR}_$ARCH"
 fi
 
-# Pulled from the Configure script
-OPTIONS="--prefix=$INSTALL_PREFIX no-tests no-deprecated"
+# Pulled from the Configure script, search for @disablables.
+# Also in https://github.com/openssl/openssl/blob/master/INSTALL.md
+OPTIONS="--prefix=$INSTALL_PREFIX \
+no-afalgeng \
+no-aria \
+no-asan \
+no-asm \
+no-autoalginit \
+no-autoerrinit \
+no-bf \
+no-blake2 \
+no-camellia \
+no-capieng \
+no-cast \
+no-cmac \
+no-cms \
+no-comp \
+no-crypto-mdebug \
+no-crypto-mdebug-backtrace \
+no-ct \
+no-deprecated \
+no-des \
+no-devcryptoeng \
+no-dgram \
+no-dh \
+no-dsa \
+no-dso \
+no-dynamic-engine \
+no-ec \
+no-ec2m \
+no-ecdh \
+no-ecdsa \
+no-ec_nistp_64_gcc_128 \
+no-egd \
+no-engine \
+no-err \
+no-external-tests \
+no-filenames \
+no-fuzz-libfuzzer \
+no-fuzz-afl \
+no-gost \
+no-heartbeats \
+no-idea \
+no-makedepend \
+no-md2 \
+no-md4 \
+no-mdc2 \
+no-msan \
+no-multiblock \
+no-nextprotoneg \
+no-pinshared \
+no-ocb \
+no-ocsp \
+no-pic \
+no-poly1305 \
+no-posix-io \
+no-psk \
+no-rc2 \
+no-rc4 \
+no-rc5 \
+no-rdrand \
+no-rfc3779 \
+no-rmd160 \
+no-scrypt \
+no-sctp \
+no-seed \
+no-shared \
+no-siphash \
+no-sm2 \
+no-sm3 \
+no-sm4 \
+no-sock \
+no-srp \
+no-srtp \
+no-sse2 \
+no-ssl-trace \
+no-tests \
+no-threads \
+no-ts \
+no-ubsan \
+no-ui-console \
+no-unit-test \
+no-whirlpool \
+no-weak-ssl-ciphers \
+no-zlib \
+no-zlib-dynamic \
+"
 
 # Let's begin. First, enter the new directory
 originalDir=`pwd`
@@ -80,7 +165,7 @@ else
 fi
 
 # Run the configure script
-CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" ./Configure $OPTIONS
+CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" ./Configure $OPTIONS --release
 
 # Build
 make clean
