@@ -11,6 +11,9 @@ srcDir=~/code/libyaml
 # Minimum iOS version (if applicable)
 MIN_IOS=15.0
 
+# Minimum Android SDK version (if applicable)
+ANDROID_SDK_VERSION=32
+
 ########## END USER EDIT SECTION #############
 
 if [ $# -lt 2 ]; then
@@ -23,12 +26,16 @@ if [ $# -lt 2 ]; then
    echo "   iphonesimulator"
    echo "   xros"
    echo "   xrsimulator"
+   echo "   android"
+   echo "   webasm"
    echo ""
    echo " arch (required):"
    echo "   x86_64"
    echo "   arm64"
+   echo "   any (only valid for webasm)"
    echo ""
    echo " prefix (default: /usr/local/{host}_{arch})"
+   exit -1
 fi
 BUILD_FOR=$1
 ARCH=$2
@@ -44,6 +51,7 @@ if [ -n "$INSTALL_PREFIX" ]; then
 fi
 
 BUILD_CMD="make -j"
+CONFIGURE_CMD=./configure
 if [ "$BUILD_FOR" = "iphoneos" ] || [ "$BUILD_FOR" = "iphonesimulator" ] || [ "$BUILD_FOR" = "macoscatalyst" ] || [ "$BUILD_FOR" = "xros" ] || [ "$BUILD_FOR" = "xrsimulator" ]; then
    XCODE_DEV="$(xcode-select -p)"
    export DEVROOT="$XCODE_DEV/Toolchains/XcodeDefault.xctoolchain"
@@ -72,17 +80,34 @@ if [ "$BUILD_FOR" = "iphoneos" ] || [ "$BUILD_FOR" = "iphonesimulator" ] || [ "$
    echo "Building for $BUILD_FOR on $ARCH (sysroot=$SYSROOT)"
    OPTIONS="$OPTIONS --disable-unix-sockets"
 elif [ "$BUILD_FOR" = "android" ]; then
-   OPTIONS="\
--DCMAKE_SYSTEM_NAME=Android \
--DCMAKE_SYSTEM_VERSION=32 \
--DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
--DCMAKE_PREFIX_PATH=/usr/local \
-"
+   # Following guidelines from https://developer.android.com/ndk/guides/other_build_systems
+   unameOut="$(uname -s)"
+   case "${unameOut}" in
+      Linux*)     HOST_TAG=linux-x86_64;;
+      Darwin*)    HOST_TAG=darwin-x86_64;;
+      *)          HOST_TAG="UNKNOWN host type: ${unameOut}"
+   esac
+
+   # Assuming ANDROID_NDK is properly installed and set
+   export ANDROID_NDK_HOME=$ANDROID_NDK
+   export TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/$HOST_TAG
+   export AR=$TOOLCHAIN/bin/llvm-ar
+   export AS=$TOOLCHAIN/bin/llvm-as
+   export CC=$TOOLCHAIN/bin/aarch64-linux-android$ANDROID_SDK_VERSION-clang
+   export CXX=$TOOLCHAIN/bin/aarch64-linux-android$ANDROID_SDK_VERSION-clang++
+   export LD=$TOOLCHAIN/bin/ld
+   export RANLIB=$TOOLCHAIN/bin/llvm-ranlib
+   export STRIP=$TOOLCHAIN/bin/llvm-strip
+
+   if [ "$ARCH" = "arm64" ]; then
+      OPTIONS="$OPTIONS --host aarch64-linux-android"
+   else
+      OPTIONS="$OPTIONS --host x86_64-linux-android"
+   fi
+elif [ "$BUILD_FOR" = "webasm" ]; then
+   CONFIGURE_CMD="emconfigure ./configure"
+   BUILD_CMD="emmake make -j16"
 elif [ "$BUILD_FOR" = "macos" ]; then
-   # XCODE_DEV="$(xcode-select -p)"
-   # export DEVROOT="$XCODE_DEV/Toolchains/XcodeDefault.xctoolchain"
-   # export PATH="$DEVROOT/usr/bin/:$PATH"
-   # SYSROOT=$XCODE_DEV/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
    CFLAGS="-target $ARCH-apple-darwin"
    OPTIONS="$OPTIONS --host $ARCH-apple-darwin"
 else
@@ -99,7 +124,7 @@ rm -f configure
 ./bootstrap
 
 # Run the configure script
-CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" ./configure $OPTIONS
+CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" $CONFIGURE_CMD $OPTIONS
 
 # Build
 eval $BUILD_CMD

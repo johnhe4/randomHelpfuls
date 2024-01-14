@@ -9,6 +9,9 @@ srcDir=~/code/openssl
 # Minimum iOS version (if applicable)
 MIN_IOS=15.0
 
+# Minimum Android SDK version (if applicable)
+ANDROID_SDK_VERSION=32
+
 ########## END USER EDIT SECTION #############
 
 if [ $# -lt 2 ]; then
@@ -21,6 +24,7 @@ if [ $# -lt 2 ]; then
    echo "   iphonesimulator"
    echo "   xros"
    echo "   xrsimulator"
+   echo "   android"
    echo ""
    echo " arch (required):"
    echo "   x86_64"
@@ -59,7 +63,6 @@ no-deprecated \
 no-des \
 no-devcryptoeng \
 no-dgram \
-no-dh \
 no-dsa \
 no-dso \
 no-dynamic-engine \
@@ -88,7 +91,6 @@ no-nextprotoneg \
 no-pinshared \
 no-ocb \
 no-ocsp \
-no-pic \
 no-poly1305 \
 no-posix-io \
 no-psk \
@@ -106,7 +108,6 @@ no-siphash \
 no-sm2 \
 no-sm3 \
 no-sm4 \
-no-sock \
 no-srp \
 no-srtp \
 no-sse2 \
@@ -158,6 +159,22 @@ if [ "$BUILD_FOR" = "iphoneos" ] || [ "$BUILD_FOR" = "iphonesimulator" ] || [ "$
    CFLAGS="$CFLAGS -arch $ARCH -Os"
    LDFLAGS="-arch $ARCH"
    OPTIONS="$OPTIONS no-async no-shared enable-ec_nistp_64_gcc_128"
+elif [ "$BUILD_FOR" = "android" ]; then
+   # Following guidelines from https://developer.android.com/ndk/guides/other_build_systems
+   # and from NOTES.Android in openssl code repository
+   unameOut="$(uname -s)"
+   case "${unameOut}" in
+      Linux*)     HOST_TAG=linux-x86_64;;
+      Darwin*)    HOST_TAG=darwin-x86_64;;
+      *)          HOST_TAG="UNKNOWN host type: ${unameOut}"
+   esac
+
+   # Assuming ANDROID_NDK is properly installed and set
+   SYSROOT=$ANDROID_NDK/toolchains/llvm/prebuilt/$HOST_TAG
+
+   export PATH=$SYSROOT/bin:$PATH
+   export ANDROID_NDK_HOME=$ANDROID_NDK
+   OPTIONS="$OPTIONS no-async no-shared enable-ec_nistp_64_gcc_128 -D__ANDROID_API__=$ANDROID_SDK_VERSION android-$ARCH "
 elif [ "$BUILD_FOR" = "macos" ]; then
    OPTIONS="$OPTIONS no-async no-shared enable-ec_nistp_64_gcc_128 darwin64-$ARCH-cc"
 else

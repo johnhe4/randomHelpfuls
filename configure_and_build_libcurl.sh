@@ -22,6 +22,9 @@ srcDir=~/code/curl
 # Minimum iOS version (if applicable)
 MIN_IOS=15.0
 
+# Minimum Android SDK version (if applicable)
+ANDROID_SDK_VERSION=32
+
 ########## END USER EDIT SECTION #############
 
 if [ $# -lt 2 ]; then
@@ -34,12 +37,14 @@ if [ $# -lt 2 ]; then
    echo "   iphonesimulator"
    echo "   xros"
    echo "   xrsimulator"
+   echo "   android"
    echo ""
    echo " arch (required):"
    echo "   x86_64"
    echo "   arm64"
    echo ""
    echo " prefix (default: /usr/local/{host}_{arch})"
+   exit -1
 fi
 BUILD_FOR=$1
 ARCH=$2
@@ -49,7 +54,7 @@ if [ -z "$INSTALL_PREFIX" ]; then
 fi
 
 OPTIONS=" \
---with-openssl \
+--with-boringssl \
 --without-secure-transport \
 --enable-ipv6 \
 --without-zlib \
@@ -71,6 +76,7 @@ OPTIONS=" \
 --disable-gopher \
 --disable-sspi \
 --disable-smb \
+--disable-ntlm \
 --enable-static=yes \
 --enable-shared=no \
 --enable-websockets \
@@ -110,6 +116,33 @@ if [ "$BUILD_FOR" = "iphoneos" ] || [ "$BUILD_FOR" = "iphonesimulator" ] || [ "$
    LDFLAGS="-arch $ARCH -isysroot $SYSROOT"
    echo "Building for $BUILD_FOR on $ARCH (sysroot=$SYSROOT)"
    OPTIONS="$OPTIONS --disable-unix-sockets"
+elif [ "$BUILD_FOR" = "android" ]; then
+   # Following guidelines from https://developer.android.com/ndk/guides/other_build_systems
+   # and https://curl.se/docs/install.html
+   unameOut="$(uname -s)"
+   case "${unameOut}" in
+      Linux*)     HOST_TAG=linux-x86_64;;
+      Darwin*)    HOST_TAG=darwin-x86_64;;
+      *)          HOST_TAG="UNKNOWN host type: ${unameOut}"
+   esac
+
+   # Assuming ANDROID_NDK is properly installed and set
+   export ANDROID_NDK_HOME=$ANDROID_NDK
+   export TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/$HOST_TAG
+   export AR=$TOOLCHAIN/bin/llvm-ar
+   export AS=$TOOLCHAIN/bin/llvm-as
+   export CC=$TOOLCHAIN/bin/aarch64-linux-android$ANDROID_SDK_VERSION-clang
+   export CXX=$TOOLCHAIN/bin/aarch64-linux-android$ANDROID_SDK_VERSION-clang++
+   export LD=$TOOLCHAIN/bin/ld
+   export RANLIB=$TOOLCHAIN/bin/llvm-ranlib
+   export STRIP=$TOOLCHAIN/bin/llvm-strip
+
+   if [ "$ARCH" = "arm64" ]; then
+      OPTIONS="$OPTIONS --host aarch64-linux-android"
+   else
+      OPTIONS="$OPTIONS --host x86_64-linux-android"
+   fi
+   OPTIONS="$OPTIONS --with-ca-path=/system/etc/security/cacerts"
 elif [ "$BUILD_FOR" = "macos" ]; then
    CFLAGS="-target $ARCH-apple-darwin"   
    OPTIONS="$OPTIONS --host $ARCH-apple-darwin"
