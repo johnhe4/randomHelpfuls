@@ -54,8 +54,6 @@ if [ -z "$INSTALL_PREFIX" ]; then
 fi
 
 OPTIONS=" \
---with-boringssl \
---without-secure-transport \
 --enable-ipv6 \
 --without-zlib \
 --without-brotli \
@@ -79,8 +77,10 @@ OPTIONS=" \
 --disable-ntlm \
 --enable-static=yes \
 --enable-shared=no \
+--disable-shared \
 --enable-websockets \
 --without-zstd \
+--without-libpsl \
 "
 
 if [ -n "$INSTALL_PREFIX" ]; then
@@ -142,10 +142,10 @@ elif [ "$BUILD_FOR" = "android" ]; then
    else
       OPTIONS="$OPTIONS --host x86_64-linux-android"
    fi
-   OPTIONS="$OPTIONS --with-ca-path=/system/etc/security/cacerts"
+   OPTIONS="$OPTIONS --with-ca-path=/system/etc/security/cacerts --with-boringssl --without-secure-transport"
 elif [ "$BUILD_FOR" = "macos" ]; then
-   CFLAGS="-target $ARCH-apple-darwin"   
-   OPTIONS="$OPTIONS --host $ARCH-apple-darwin"
+   CFLAGS="-target $ARCH-apple-darwin"
+   OPTIONS="$OPTIONS --host $ARCH-apple-darwin --without-openssl --with-secure-transport"
 else
    OPTIONS="$OPTIONS"
 fi
