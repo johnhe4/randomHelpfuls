@@ -75,6 +75,7 @@ OPTIONS=" \
 --disable-sspi \
 --disable-smb \
 --disable-ntlm \
+--without-nghttp2 \
 --enable-static=yes \
 --enable-shared=no \
 --disable-shared \

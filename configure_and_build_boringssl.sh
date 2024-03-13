@@ -27,6 +27,12 @@ if [ $# -lt 2 ]; then
    echo " <this_script>.sh host arch prefix"
    echo ""
    echo " host (required):"
+   echo "   macos"
+   echo "   macoscatalyst"
+   echo "   iphoneos"
+   echo "   iphonesimulator"
+   echo "   xros"
+   echo "   xrsimulator"
    echo "   android"
    echo ""
    echo " arch (required):"
@@ -51,13 +57,31 @@ fi
 
 BUILD_CMD="make -j16"
 CONFIGURE_CMD="cmake .."
-if [ "$BUILD_FOR" = "android" ]; then
+if [ "$BUILD_FOR" = "iphoneos" ] || [ "$BUILD_FOR" = "iphonesimulator" ] || [ "$BUILD_FOR" = "macoscatalyst" ] || [ "$BUILD_FOR" = "xros" ] || [ "$BUILD_FOR" = "xrsimulator" ]; then
+   XCODE_DEV="$(xcode-select -p)"
+   if [ "$BUILD_FOR" = "iphoneos" ]; then
+      OPTIONS="$OPTIONS " # TODO. We really only need headers since Apple includes it's own tbd file
+   elif [ "$BUILD_FOR" = "iphonesimulator" ]; then
+      OPTIONS="$OPTIONS " # TODO. We really only need headers since Apple includes it's own tbd file
+   elif [ "$BUILD_FOR" = "macoscatalyst" ]; then
+      OPTIONS="$OPTIONS " # TODO. We really only need headers since Apple includes it's own tbd file
+   elif [ "$BUILD_FOR" = "xros" ]; then
+      OPTIONS="$OPTIONS " # TODO. We really only need headers since Apple includes it's own tbd file
+   elif [ "$BUILD_FOR" = "xrsimulator" ]; then
+      OPTIONS="$OPTIONS " # TODO. We really only need headers since Apple includes it's own tbd file
+   fi
+   echo "Building for $BUILD_FOR on $ARCH"
+elif [ "$BUILD_FOR" = "android" ]; then
    if [ "$ARCH" = "arm64" ]; then
       OPTIONS="$OPTIONS -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a"
    else
       OPTIONS="$OPTIONS -DCMAKE_ANDROID_ARCH_ABI=x86_64"
    fi
    OPTIONS="$OPTIONS -DCMAKE_SYSTEM_NAME=Android -DCMAKE_SYSTEM_VERSION=$ANDROID_SDK_VERSION"
+elif [ "$BUILD_FOR" = "macos" ]; then
+   OPTIONS="$OPTIONS -DCMAKE_OSX_ARCHITECTURES=$ARCH"
+else
+   OPTIONS="$OPTIONS "
 fi
 
 # Let's begin.
