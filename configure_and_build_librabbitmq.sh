@@ -36,6 +36,8 @@ if [ $# -lt 2 ]; then
    echo "   xros"
    echo "   xrsimulator"
    echo "   android"
+   echo "   linux"
+   echo "   win32"
    echo ""
    echo " arch (required):"
    echo "   x86_64"
@@ -73,6 +75,7 @@ if [ -n "$INSTALL_PREFIX" ]; then
 fi
 
 BUILD_CMD="make -j16"
+INSTALL_CMD="sudo make install"
 if [ "$BUILD_FOR" = "iphoneos" ] || [ "$BUILD_FOR" = "iphonesimulator" ] || [ "$BUILD_FOR" = "macoscatalyst" ] || [ "$BUILD_FOR" = "xros" ] || [ "$BUILD_FOR" = "xrsimulator" ]; then
    XCODE_DEV="$(xcode-select -p)"
    if [ "$BUILD_FOR" = "iphoneos" ]; then
@@ -106,6 +109,10 @@ elif [ "$BUILD_FOR" = "android" ]; then
    OPTIONS="$OPTIONS -DCMAKE_SYSTEM_NAME=Android -DCMAKE_SYSTEM_VERSION=$ANDROID_SDK_VERSION"
 elif [ "$BUILD_FOR" = "macos" ]; then
    OPTIONS="$OPTIONS -DCMAKE_OSX_ARCHITECTURES=$ARCH"
+elif [ "$BUILD_FOR" = "win32" ]; then
+   #OPTIONS="$OPTIONS"
+   BUILD_CMD="cmake --build ."
+   INSTALL_CMD="cmake --build . --target install"
 else
    OPTIONS="$OPTIONS "
 fi
@@ -124,7 +131,7 @@ cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE $OPTIONS
 
 # Build
 $BUILD_CMD
-sudo make install
+$INSTALL_CMD
 
 # Finally, return to the original directory
 cd $originalDir

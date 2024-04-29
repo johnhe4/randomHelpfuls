@@ -38,6 +38,8 @@ if [ $# -lt 2 ]; then
    echo "   xros"
    echo "   xrsimulator"
    echo "   android"
+   echo "   linux"
+   echo "   win32"
    echo ""
    echo " arch (required):"
    echo "   x86_64"
@@ -89,7 +91,9 @@ if [ -n "$INSTALL_PREFIX" ]; then
    export PKG_CONFIG_PATH="$INSTALL_PREFIX/lib/pkgconfig"
 fi
 
+PREBUILD_CMD="rm -f configure; autoreconf -fi"
 BUILD_CMD="make -j"
+INSTALL_CMD="sudo make install"
 if [ "$BUILD_FOR" = "iphoneos" ] || [ "$BUILD_FOR" = "iphonesimulator" ] || [ "$BUILD_FOR" = "macoscatalyst" ] || [ "$BUILD_FOR" = "xros" ] || [ "$BUILD_FOR" = "xrsimulator" ]; then
    XCODE_DEV="$(xcode-select -p)"
    export DEVROOT="$XCODE_DEV/Toolchains/XcodeDefault.xctoolchain"
@@ -147,6 +151,12 @@ elif [ "$BUILD_FOR" = "android" ]; then
 elif [ "$BUILD_FOR" = "macos" ]; then
    CFLAGS="-target $ARCH-apple-darwin"
    OPTIONS="$OPTIONS --host $ARCH-apple-darwin --without-openssl --with-secure-transport"
+elif [ "$BUILD_FOR" = "win32" ]; then
+   #OPTIONS="$OPTIONS --without-openssl --with-schannel"
+   OPTIONS="MACHINE=x64 ENABLE_SCHANNEL=yes"
+   PREBUILD_CMD="./buildconf.bat; cd winbuild"
+   BUILD_CMD="nmake /f Makefile.vc mode=static $OPTIONS"
+   INSTALL_CMD="cmake --build . --target install"
 else
    OPTIONS="$OPTIONS"
 fi
@@ -159,8 +169,7 @@ export CFLAGS="$CFLAGS"
 export LDFLAGS="$LDFLAGS"
 
 # Start from scratch
-rm -f configure
-autoreconf -fi
+$PREBUILD_CMD
 
 # Run the configure script
 ./configure $OPTIONS
@@ -168,7 +177,7 @@ autoreconf -fi
 # Build. Don't worry about errors, we don't care about curl, just libcurl
 $BUILD_CMD || true
 
-sudo make install
+$INSTALL_CMD
 
 # Finally, return to the original directory
 cd $originalDir

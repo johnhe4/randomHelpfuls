@@ -25,6 +25,8 @@ if [ $# -lt 2 ]; then
    echo "   xros"
    echo "   xrsimulator"
    echo "   android"
+   echo "   linux"
+   echo "   win32"
    echo ""
    echo " arch (required):"
    echo "   x86_64"
@@ -177,6 +179,8 @@ elif [ "$BUILD_FOR" = "android" ]; then
    OPTIONS="$OPTIONS no-async no-shared enable-ec_nistp_64_gcc_128 -D__ANDROID_API__=$ANDROID_SDK_VERSION android-$ARCH "
 elif [ "$BUILD_FOR" = "macos" ]; then
    OPTIONS="$OPTIONS no-async no-shared enable-ec_nistp_64_gcc_128 darwin64-$ARCH-cc"
+elif [ "$BUILD_FOR" = "win32" ]; then
+   OPTIONS="$OPTIONS"
 else
    OPTIONS="$OPTIONS"
 fi
