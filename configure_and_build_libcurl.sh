@@ -147,7 +147,8 @@ elif [ "$BUILD_FOR" = "android" ]; then
    else
       OPTIONS="$OPTIONS --host x86_64-linux-android"
    fi
-   OPTIONS="$OPTIONS --with-ca-path=/system/etc/security/cacerts --with-boringssl --without-secure-transport"
+   #OPTIONS="$OPTIONS --with-ca-path=/system/etc/security/cacerts --with-boringssl --without-secure-transport"
+   OPTIONS="$OPTIONS --with-ca-path=/system/etc/security/cacerts --with-openssl=$INSTALL_PREFIX --without-secure-transport"
 elif [ "$BUILD_FOR" = "macos" ]; then
    CFLAGS="-target $ARCH-apple-darwin"
    OPTIONS="$OPTIONS --host $ARCH-apple-darwin --without-openssl --with-secure-transport"

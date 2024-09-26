@@ -69,7 +69,7 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_openssl.sh xros arm64
 # $SCRIPTS_DIR/configure_and_build_openssl.sh xrsimulator arm64
 # $SCRIPTS_DIR/configure_and_build_openssl.sh xrsimulator x86_64
-# $SCRIPTS_DIR/configure_and_build_openssl.sh android arm64
+# $SCRIPTS_DIR/configure_and_build_boringssl.sh android arm64
 
 # curl
 # $SCRIPTS_DIR/configure_and_build_libcurl.sh macos arm64
