@@ -6,6 +6,11 @@
 # Location of the source
 srcDir=~/code/openssl
 
+# Build type
+#  debug
+#  release
+BUILD_TYPE=release
+
 # Minimum iOS version (if applicable)
 MIN_IOS=15.0
 
@@ -33,6 +38,7 @@ if [ $# -lt 2 ]; then
    echo "   arm64"
    echo ""
    echo " prefix (default: /usr/local/{host}_{arch})"
+   exit -1
 fi
 BUILD_FOR=$1
 ARCH=$2
@@ -60,26 +66,31 @@ no-cms \
 no-comp \
 no-crypto-mdebug \
 no-crypto-mdebug-backtrace \
-no-ct \
 no-deprecated \
-no-des \
+no-ec_nistp_64_gcc_128 \
+no-engine \
+no-dynamic-engine \
 no-devcryptoeng \
 no-dgram \
-no-dsa \
-no-dso \
-no-dynamic-engine \
-no-ec \
-no-ec2m \
-no-ecdh \
-no-ecdsa \
-no-ec_nistp_64_gcc_128 \
-no-egd \
-no-engine \
-no-err \
 no-external-tests \
-no-filenames \
 no-fuzz-libfuzzer \
 no-fuzz-afl \
+no-ct \
+no-weak-ssl-ciphers \
+no-zlib \
+no-zlib-dynamic \
+no-ubsan \
+no-ui-console \
+no-unit-test \
+no-whirlpool \
+no-ssl-trace \
+no-tests \
+no-threads \
+no-des \
+no-dso \
+no-egd \
+no-err \
+no-filenames \
 no-gost \
 no-heartbeats \
 no-idea \
@@ -113,17 +124,7 @@ no-sm4 \
 no-srp \
 no-srtp \
 no-sse2 \
-no-ssl-trace \
-no-tests \
-no-threads \
 no-ts \
-no-ubsan \
-no-ui-console \
-no-unit-test \
-no-whirlpool \
-no-weak-ssl-ciphers \
-no-zlib \
-no-zlib-dynamic \
 "
 
 # Let's begin. First, enter the new directory
@@ -186,7 +187,7 @@ else
 fi
 
 # Run the configure script
-CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" ./Configure $OPTIONS --release
+CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" ./Configure $OPTIONS --$BUILD_TYPE
 
 # Build
 make clean
