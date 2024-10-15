@@ -37,6 +37,7 @@ vcpkg install libxml2[core]:$TARGET_TRIPLET
 vcpkg install librabbitmq:$TARGET_TRIPLET
 vcpkg install zeromq:$TARGET_TRIPLET
 vcpkg install replxx:$TARGET_TRIPLET
+vcpkg install python3:$TARGET_TRIPLET
 vcpkg install catch2:$TARGET_TRIPLET
 
 
