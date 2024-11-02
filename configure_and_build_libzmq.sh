@@ -81,6 +81,7 @@ if [ "$BUILD_FOR" = "iphoneos" ] || [ "$BUILD_FOR" = "iphonesimulator" ] || [ "$
       OPTIONS="$OPTIONS -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=$MIN_IOS -DCMAKE_OSX_ARCHITECTURES=$ARCH -DCMAKE_OSX_SYSROOT=$SYSROOT"
    elif [ "$BUILD_FOR" = "macoscatalyst" ]; then
       echo NOT IMPLEMENTED
+      exit 0
    elif [ "$BUILD_FOR" = "xros" ]; then
       OPTIONS="$OPTIONS -DCMAKE_SYSTEM_NAME=visionOS -DCMAKE_OSX_ARCHITECTURES=$ARCH"
    elif [ "$BUILD_FOR" = "xrsimulator" ]; then

@@ -142,6 +142,10 @@ if [ "$BUILD_FOR" = "iphoneos" ] || [ "$BUILD_FOR" = "iphonesimulator" ] || [ "$
       SYSROOT=$XCODE_DEV/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk
       CFLAGS="-target $ARCH-apple-darwin -isysroot $SYSROOT"
       OPTIONS="$OPTIONS iossimulator-xcrun"
+   elif [ "$BUILD_FOR" = "macoscatalyst" ]; then
+      SYSROOT=$XCODE_DEV/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+      CFLAGS="-target $ARCH-apple-ios15.0-macabi -miphoneos-version-min=15.0 -isysroot $SYSROOT"
+      OPTIONS="$OPTIONS ios64-cross"
    elif [ "$BUILD_FOR" = "xros" ]; then
       # TODO: This is different since xros isn't yet supported, so we modify the iOS version.
       # See https://github.com/openssl/openssl/blob/master/Configurations/15-ios.conf for more details 

@@ -107,6 +107,18 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_libzmq.sh xrsimulator x86_64
 # $SCRIPTS_DIR/configure_and_build_libzmq.sh android arm64
 
+# libwebsockets
+# $SCRIPTS_DIR/configure_and_build_libwebsockets.sh macos arm64
+# $SCRIPTS_DIR/configure_and_build_libwebsockets.sh macos x86_64
+# $SCRIPTS_DIR/configure_and_build_libwebsockets.sh macoscatalyst x86_64
+# $SCRIPTS_DIR/configure_and_build_libwebsockets.sh iphoneos arm64
+# $SCRIPTS_DIR/configure_and_build_libwebsockets.sh iphonesimulator arm64
+# $SCRIPTS_DIR/configure_and_build_libwebsockets.sh iphonesimulator x86_64
+# $SCRIPTS_DIR/configure_and_build_libwebsockets.sh xros arm64
+# $SCRIPTS_DIR/configure_and_build_libwebsockets.sh xrsimulator arm64
+# $SCRIPTS_DIR/configure_and_build_libwebsockets.sh xrsimulator x86_64
+# $SCRIPTS_DIR/configure_and_build_libwebsockets.sh android arm64
+
 # replxx (not for mobile devices)
 # $SCRIPTS_DIR/configure_and_build_libreplxx.sh macos arm64
 # $SCRIPTS_DIR/configure_and_build_libreplxx.sh macos x86_64
