@@ -97,6 +97,8 @@ OPTIONS=" \
 -DLWS_WITH_NETLINK=OFF \
 -DLWS_WITH_BINDTODEVICE=OFF \
 -DLWS_WITHOUT_TESTAPPS=ON \
+-DLWS_WITH_NETLINK=OFF \
+-DLWS_WITH_LIBCAP=OFF \
 "
 
 # These options are critical for iOS, visionOS, and Android. For reasons unknown to me,
