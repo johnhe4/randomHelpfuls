@@ -77,11 +77,12 @@ OPTIONS=" \
 --disable-sspi \
 --disable-smb \
 --disable-ntlm \
+--disable-docs \
 --without-nghttp2 \
 --enable-static=yes \
 --enable-shared=no \
 --disable-shared \
---enable-websockets \
+--disable-websockets \
 --without-zstd \
 --without-libpsl \
 "
@@ -131,23 +132,24 @@ elif [ "$BUILD_FOR" = "android" ]; then
       *)          HOST_TAG="UNKNOWN host type: ${unameOut}"
    esac
 
+   if [ "$ARCH" = "arm64" ]; then
+         OPTIONS="$OPTIONS --host aarch64-linux-android"
+         TOOLS_ARCH="arm64-v8a"
+      else
+         OPTIONS="$OPTIONS --host x86_64-linux-android"
+         TOOLS_ARCH="x86_64"
+      fi
+
    # Assuming ANDROID_NDK is properly installed and set
    export ANDROID_NDK_HOME=$ANDROID_NDK
    export TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/$HOST_TAG
    export AR=$TOOLCHAIN/bin/llvm-ar
    export AS=$TOOLCHAIN/bin/llvm-as
-   export CC=$TOOLCHAIN/bin/aarch64-linux-android$ANDROID_SDK_VERSION-clang
-   export CXX=$TOOLCHAIN/bin/aarch64-linux-android$ANDROID_SDK_VERSION-clang++
+   export CC=$TOOLCHAIN/bin/$TOOLS_ARCH-linux-android$ANDROID_SDK_VERSION-clang
+   export CXX=$TOOLCHAIN/bin/$TOOLS_ARCH-linux-android$ANDROID_SDK_VERSION-clang++
    export LD=$TOOLCHAIN/bin/ld
    export RANLIB=$TOOLCHAIN/bin/llvm-ranlib
    export STRIP=$TOOLCHAIN/bin/llvm-strip
-
-   if [ "$ARCH" = "arm64" ]; then
-      OPTIONS="$OPTIONS --host aarch64-linux-android"
-   else
-      OPTIONS="$OPTIONS --host x86_64-linux-android"
-   fi
-   #OPTIONS="$OPTIONS --with-ca-path=/system/etc/security/cacerts --with-boringssl --without-secure-transport"
    OPTIONS="$OPTIONS --with-ca-path=/system/etc/security/cacerts --with-openssl=$INSTALL_PREFIX --without-secure-transport"
 elif [ "$BUILD_FOR" = "macos" ]; then
    CFLAGS="-target $ARCH-apple-darwin"

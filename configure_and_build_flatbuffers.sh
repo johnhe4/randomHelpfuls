@@ -53,7 +53,6 @@ fi
 OPTIONS=" \
 -DFLATBUFFERS_BUILD_TESTS=OFF \
 -DFLATBUFFERS_ENABLE_PCH=ON \
--DFLATBUFFERS_BUILD_FLATC=ON \
 "
 
 if [ -n "$INSTALL_PREFIX" ]; then
@@ -64,6 +63,7 @@ BUILD_CMD="make -j16"
 CONFIGURE_CMD="cmake .."
 if [ "$BUILD_FOR" = "iphoneos" ] || [ "$BUILD_FOR" = "iphonesimulator" ] || [ "$BUILD_FOR" = "macoscatalyst" ] || [ "$BUILD_FOR" = "xros" ] || [ "$BUILD_FOR" = "xrsimulator" ]; then
    XCODE_DEV="$(xcode-select -p)"
+   OPTIONS="$OPTIONS -DFLATBUFFERS_BUILD_FLATC=OFF"
    if [ "$BUILD_FOR" = "iphoneos" ]; then
       OPTIONS="$OPTIONS -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=$MIN_IOS -DCMAKE_OSX_ARCHITECTURES=$ARCH"
    elif [ "$BUILD_FOR" = "iphonesimulator" ]; then
@@ -78,18 +78,21 @@ if [ "$BUILD_FOR" = "iphoneos" ] || [ "$BUILD_FOR" = "iphonesimulator" ] || [ "$
       OPTIONS="$OPTIONS -DCMAKE_SYSTEM_NAME=visionOS -DCMAKE_OSX_ARCHITECTURES=$ARCH -DCMAKE_OSX_SYSROOT=$SYSROOT"
    fi
 elif [ "$BUILD_FOR" = "android" ]; then
+   OPTIONS="$OPTIONS -DFLATBUFFERS_BUILD_FLATC=OFF"
    if [ "$ARCH" = "arm64" ]; then
       OPTIONS="$OPTIONS -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a"
    else
       OPTIONS="$OPTIONS -DCMAKE_ANDROID_ARCH_ABI=x86_64"
    fi
    OPTIONS="$OPTIONS -DCMAKE_SYSTEM_NAME=Android -DCMAKE_SYSTEM_VERSION=$ANDROID_SDK_VERSION -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX"
-elif [ "$BUILD_FOR" = "macos" ]; then
-   OPTIONS="$OPTIONS -DCMAKE_OSX_ARCHITECTURES=$ARCH"
 elif [ "$BUILD_FOR" = "webasm" ]; then
+   OPTIONS="$OPTIONS -DFLATBUFFERS_BUILD_FLATC=OFF"
    CONFIGURE_CMD="emcmake cmake .."
    BUILD_CMD="emmake make -j16"
+elif [ "$BUILD_FOR" = "macos" ]; then
+   OPTIONS="$OPTIONS -DCMAKE_OSX_ARCHITECTURES=$ARCH -DFLATBUFFERS_BUILD_FLATC=ON"
 else
+   OPTIONS="$OPTIONS -DFLATBUFFERS_BUILD_FLATC=ON"
    OPTIONS="$OPTIONS"
 fi
 
