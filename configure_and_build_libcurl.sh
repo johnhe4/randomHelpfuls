@@ -134,7 +134,7 @@ elif [ "$BUILD_FOR" = "android" ]; then
 
    if [ "$ARCH" = "arm64" ]; then
          OPTIONS="$OPTIONS --host aarch64-linux-android"
-         TOOLS_ARCH="arm64-v8a"
+         TOOLS_ARCH="aarch64"
       else
          OPTIONS="$OPTIONS --host x86_64-linux-android"
          TOOLS_ARCH="x86_64"
