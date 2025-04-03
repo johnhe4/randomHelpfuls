@@ -172,7 +172,7 @@ export CFLAGS="$CFLAGS"
 export LDFLAGS="$LDFLAGS"
 
 # Start from scratch
-$PREBUILD_CMD
+eval $PREBUILD_CMD
 
 # Run the configure script
 ./configure $OPTIONS
