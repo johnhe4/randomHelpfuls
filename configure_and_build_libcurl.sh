@@ -150,6 +150,10 @@ elif [ "$BUILD_FOR" = "android" ]; then
    export LD=$TOOLCHAIN/bin/ld
    export RANLIB=$TOOLCHAIN/bin/llvm-ranlib
    export STRIP=$TOOLCHAIN/bin/llvm-strip
+
+   # This is required for some systems. BoringSSL is partially C++.
+   LDFLAGS="$LDFLAGS -lc++"
+
    OPTIONS="$OPTIONS --with-ca-path=/system/etc/security/cacerts --with-openssl=$INSTALL_PREFIX --without-secure-transport"
 elif [ "$BUILD_FOR" = "macos" ]; then
    CFLAGS="-target $ARCH-apple-darwin"
