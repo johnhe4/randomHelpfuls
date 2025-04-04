@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This is a helper script to configure and build boringssl.
-#   git clone https://github.com:google/boringssl.git
+#   git clone https://github.com/google/boringssl.git
 # Requires `go` to be installed
 
 ########## BEGIN USER EDIT SECTION #############
