@@ -3,8 +3,6 @@
 # This is a helper script to configure and build librabbitmq-c.
 # Get the code then run this script:
 #   git clone git@github.com:alanxz/rabbitmq-c.git
-# Depends on version 0.13.0 with patch from https://github.com/alanxz/rabbitmq-c/pull/794
-# Will depend on local branch openssl_engine_option in rabbitmq-c_john, once master is addressed
 
 ########## BEGIN USER EDIT SECTION #############
 
