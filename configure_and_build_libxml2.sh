@@ -87,6 +87,7 @@ if [ -n "$INSTALL_PREFIX" ]; then
    OPTIONS="$OPTIONS -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX"
 fi
 
+CLEAN_CMD="make clean"
 BUILD_CMD="make -j16"
 CONFIGURE_CMD="cmake .."
 if [ "$BUILD_FOR" = "iphoneos" ] || [ "$BUILD_FOR" = "iphonesimulator" ] || [ "$BUILD_FOR" = "macoscatalyst" ] || [ "$BUILD_FOR" = "xros" ] || [ "$BUILD_FOR" = "xrsimulator" ]; then
@@ -127,6 +128,7 @@ mkdir -p build
 cd build
 
 # Start from scratch
+$CLEAN_CMD
 rm -f CMakeCache.txt
 
 # Run the configure script
