@@ -1,10 +1,14 @@
 #!/bin/bash
 
 # This is a helper script to configure, build, and install openssl.
+#   git clone https://github.com/openssl/openssl.git
 ########## BEGIN USER EDIT SECTION #############
 
 # Location of the source
 srcDir=~/code/openssl
+
+# Branch. For compatibility with the oh-so-many 3rd party libs that use openssl, use an older version such as OpenSSL_1_1_1w
+branch=OpenSSL_1_1_1w
 
 # Build type
 #  debug
@@ -189,6 +193,9 @@ elif [ "$BUILD_FOR" = "win32" ]; then
 else
    OPTIONS="$OPTIONS"
 fi
+
+# Checkout the branch
+git checkout $branch
 
 # Run the configure script
 CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" ./Configure $OPTIONS --$BUILD_TYPE
