@@ -2,7 +2,8 @@
 
 # This is a helper script to configure and build boringssl.
 #   git clone https://github.com/google/boringssl.git
-# Requires `go` to be installed
+# Requires `go` to be installed.
+# Last known hash that worked for libraries that depend on boringssl: 02bc0949
 
 ########## BEGIN USER EDIT SECTION #############
 
