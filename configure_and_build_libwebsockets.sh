@@ -5,6 +5,8 @@
 #   git clone git@github.com:warmcat/libwebsockets.git
 #
 # Tested with branch v4.3-stable
+# For servers that accept clients without Sec-WebSocket-Protocol, you MUST use hash 55135591 or later:
+#   https://github.com/warmcat/libwebsockets/issues/3436
 #
 # NOTES:
 #
@@ -56,7 +58,7 @@ if [ -z "$INSTALL_PREFIX" ]; then
 fi
 
 OPTIONS=" \
--DLWS_ROLE_MQTT=OFF \
+-DLWS_ROLE_MQTT=ON \
 -DLWS_WITH_HTTP_STREAM_COMPRESSION=OFF \
 -DLWS_WITH_HTTP_BASIC_AUTH=ON \
 -DLWS_WITH_HTTP_DIGEST_AUTH=OFF \
