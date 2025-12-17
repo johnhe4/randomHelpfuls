@@ -71,7 +71,7 @@ if [ -n "$INSTALL_PREFIX" ]; then
 fi
 
 PREBUILD_CMD="rm -f configure config.cache config.status; export NOCONFIGURE=YES; ./autogen.sh"
-BUILD_CMD="make -j"
+BUILD_CMD="make clean; make -j"
 INSTALL_CMD="sudo make install"
 if [ "$BUILD_FOR" = "iphoneos" ] || [ "$BUILD_FOR" = "iphonesimulator" ] || [ "$BUILD_FOR" = "macoscatalyst" ] || [ "$BUILD_FOR" = "xros" ] || [ "$BUILD_FOR" = "xrsimulator" ]; then
    XCODE_DEV="$(xcode-select -p)"
@@ -159,8 +159,8 @@ eval $PREBUILD_CMD
 # Run the configure script
 ./configure $OPTIONS
 
-# Build. Don't worry about errors, we don't care about curl, just libcurl
-$BUILD_CMD || true
+# Build.
+eval $BUILD_CMD
 
 $INSTALL_CMD
 
