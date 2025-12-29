@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configure and build librdkafka
-#  git clone https://github.com/cyrusimap/cyrus-sasl.git
+#  git clone https://github.com/cyrusimap/cyrus-sasl.git libsasl2
 #
 # NOTES:
 #  - install automake, autoconf, libtool. Use homebrew if you don't want to build and install manually
@@ -60,7 +60,7 @@ OPTIONS=" \
 --enable-static \
 --disable-shared \
 --disable-sample \
---enable-pic \
+--with-pic=yes \
 --disable-otp \
 --without-saslauthd \
 "
@@ -70,9 +70,9 @@ if [ -n "$INSTALL_PREFIX" ]; then
    export PKG_CONFIG_PATH="$INSTALL_PREFIX/lib/pkgconfig"
 fi
 
-PREBUILD_CMD="rm -f configure config.cache config.status; export NOCONFIGURE=YES; ./autogen.sh"
-BUILD_CMD="make clean; make -j"
-INSTALL_CMD="sudo make install"
+PREBUILD_CMD="rm -f configure config.cache config.status autom4te.cache lib/libsasl2.*a; export NOCONFIGURE=YES; ./autogen.sh; make clean"
+BUILD_CMD="make -j"
+INSTALL_CMD="pushd include; sudo make install; popd; pushd lib; sudo make install; popd; sudo make install-pkgconfigDATA"
 if [ "$BUILD_FOR" = "iphoneos" ] || [ "$BUILD_FOR" = "iphonesimulator" ] || [ "$BUILD_FOR" = "macoscatalyst" ] || [ "$BUILD_FOR" = "xros" ] || [ "$BUILD_FOR" = "xrsimulator" ]; then
    XCODE_DEV="$(xcode-select -p)"
    export DEVROOT="$XCODE_DEV/Toolchains/XcodeDefault.xctoolchain"
@@ -109,12 +109,12 @@ elif [ "$BUILD_FOR" = "android" ]; then
    esac
 
    if [ "$ARCH" = "arm64" ]; then
-         OPTIONS="$OPTIONS --host=aarch64-linux-android"
-         TOOLS_ARCH="aarch64"
-      else
-         OPTIONS="$OPTIONS --host=x86_64-linux-android"
-         TOOLS_ARCH="x86_64"
-      fi
+      OPTIONS="$OPTIONS --host=aarch64-linux-android"
+      TOOLS_ARCH="aarch64"
+   else
+      OPTIONS="$OPTIONS --host=x86_64-linux-android"
+      TOOLS_ARCH="x86_64"
+   fi
 
    # Assuming ANDROID_NDK is properly installed and set
    export ANDROID_NDK_HOME=$ANDROID_NDK
@@ -127,10 +127,11 @@ elif [ "$BUILD_FOR" = "android" ]; then
    export RANLIB=$TOOLCHAIN/bin/llvm-ranlib
    export STRIP=$TOOLCHAIN/bin/llvm-strip
 
-   # This is required for some systems. BoringSSL is partially C++.
-   LDFLAGS="$LDFLAGS -lc++"
-
    OPTIONS="$OPTIONS --with-openssl=$INSTALL_PREFIX"
+
+   # The configure script for libsasl only looks inside in the 'lib64' directory for libraries, but very likely
+   # ours is inside the 'lib' directory. This causes libsasl to fail configuring (and thus "finding") OpenSSL.
+   OPTIONS="$OPTIONS --with-lib-subdir=lib"
 elif [ "$BUILD_FOR" = "macos" ]; then
    CFLAGS="-target $ARCH-apple-darwin"
    OPTIONS="$OPTIONS --host $ARCH-apple-darwin"
@@ -157,10 +158,10 @@ eval $PREBUILD_CMD
 # Run the configure script
 ./configure $OPTIONS
 
-# Build.
-eval $BUILD_CMD
+# Build.  Don't worry about errors, we don't care about utils, just libsasl2
+$BUILD_CMD || true
 
-$INSTALL_CMD
+eval $INSTALL_CMD
 
 # Finally, return to the original directory
 cd $originalDir
