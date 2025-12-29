@@ -70,7 +70,7 @@ if [ -n "$INSTALL_PREFIX" ]; then
    export PKG_CONFIG_PATH="$INSTALL_PREFIX/lib/pkgconfig"
 fi
 
-PREBUILD_CMD="rm -rf configure config.cache config.status autom4te.cache lib/libsasl2.*a; export NOCONFIGURE=YES; ./autogen.sh; make clean"
+PREBUILD_CMD="make clean; rm -rf configure config.cache config.status autom4te.cache lib/libsasl2.*a; export NOCONFIGURE=YES; ./autogen.sh"
 BUILD_CMD="make -j"
 INSTALL_CMD="pushd include; sudo make install; popd; pushd lib; sudo make install; popd; sudo make install-pkgconfigDATA"
 if [ "$BUILD_FOR" = "iphoneos" ] || [ "$BUILD_FOR" = "iphonesimulator" ] || [ "$BUILD_FOR" = "macoscatalyst" ] || [ "$BUILD_FOR" = "xros" ] || [ "$BUILD_FOR" = "xrsimulator" ]; then
