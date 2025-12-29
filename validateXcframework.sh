@@ -2,10 +2,10 @@
 # Validates the an XCFramework
 
 # Specify the import name of the XCFramework
-IMPORT_NAME=myFramework
+IMPORT_NAME=PropsyncSwift
 
 # Specify the version of Xcode to compile with. Must be installed on this system!
-XCODE_VER=15.2
+XCODE_VER=16.0
 
 # Specify all known variants
 declare -a VARIANTS=(

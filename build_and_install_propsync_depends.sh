@@ -20,7 +20,6 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_json.sh iphonesimulator x86_64
 # $SCRIPTS_DIR/configure_and_build_json.sh xros arm64
 # $SCRIPTS_DIR/configure_and_build_json.sh xrsimulator arm64
-# $SCRIPTS_DIR/configure_and_build_json.sh xrsimulator x86_64
 # $SCRIPTS_DIR/configure_and_build_json.sh android arm64
 
 # libyaml
@@ -32,7 +31,6 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_libyaml.sh iphonesimulator x86_64
 # $SCRIPTS_DIR/configure_and_build_libyaml.sh xros arm64
 # $SCRIPTS_DIR/configure_and_build_libyaml.sh xrsimulator arm64
-# $SCRIPTS_DIR/configure_and_build_libyaml.sh xrsimulator x86_64
 # SCRIPTS_DIR/configure_and_build_libyaml.sh android arm64
 
 # libxml2
@@ -44,7 +42,6 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_libxml2.sh iphonesimulator x86_64
 # $SCRIPTS_DIR/configure_and_build_libxml2.sh xros arm64
 # $SCRIPTS_DIR/configure_and_build_libxml2.sh xrsimulator arm64
-# $SCRIPTS_DIR/configure_and_build_libxml2.sh xrsimulator x86_64
 # $SCRIPTS_DIR/configure_and_build_libxml2.sh android arm64
 
 # flatbuffers
@@ -56,7 +53,6 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_flatbuffers.sh iphonesimulator x86_64
 # $SCRIPTS_DIR/configure_and_build_flatbuffers.sh xros arm64
 # $SCRIPTS_DIR/configure_and_build_flatbuffers.sh xrsimulator arm64
-# $SCRIPTS_DIR/configure_and_build_flatbuffers.sh xrsimulator x86_64
 # $SCRIPTS_DIR/configure_and_build_flatbuffers.sh android arm64
 
 # openssl
@@ -68,7 +64,6 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_openssl.sh iphonesimulator x86_64
 # $SCRIPTS_DIR/configure_and_build_openssl.sh xros arm64
 # $SCRIPTS_DIR/configure_and_build_openssl.sh xrsimulator arm64
-# $SCRIPTS_DIR/configure_and_build_openssl.sh xrsimulator x86_64
 # $SCRIPTS_DIR/configure_and_build_boringssl.sh android arm64
 
 # curl
@@ -80,7 +75,6 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_libcurl.sh iphonesimulator x86_64
 # $SCRIPTS_DIR/configure_and_build_libcurl.sh xros arm64
 # $SCRIPTS_DIR/configure_and_build_libcurl.sh xrsimulator arm64
-# $SCRIPTS_DIR/configure_and_build_libcurl.sh xrsimulator x86_64
 # $SCRIPTS_DIR/configure_and_build_libcurl.sh android arm64
 
 # rabbitmq
@@ -92,7 +86,6 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_librabbitmq.sh iphonesimulator x86_64
 # $SCRIPTS_DIR/configure_and_build_librabbitmq.sh xros arm64
 # $SCRIPTS_DIR/configure_and_build_librabbitmq.sh xrsimulator arm64
-# $SCRIPTS_DIR/configure_and_build_librabbitmq.sh xrsimulator x86_64
 # $SCRIPTS_DIR/configure_and_build_librabbitmq.sh android arm64
 
 # libzmq
@@ -104,7 +97,6 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_libzmq.sh iphonesimulator x86_64
 # $SCRIPTS_DIR/configure_and_build_libzmq.sh xros arm64
 # $SCRIPTS_DIR/configure_and_build_libzmq.sh xrsimulator arm64
-# $SCRIPTS_DIR/configure_and_build_libzmq.sh xrsimulator x86_64
 # $SCRIPTS_DIR/configure_and_build_libzmq.sh android arm64
 
 # libwebsockets
@@ -116,7 +108,6 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_libwebsockets.sh iphonesimulator x86_64
 # $SCRIPTS_DIR/configure_and_build_libwebsockets.sh xros arm64
 # $SCRIPTS_DIR/configure_and_build_libwebsockets.sh xrsimulator arm64
-# $SCRIPTS_DIR/configure_and_build_libwebsockets.sh xrsimulator x86_64
 # $SCRIPTS_DIR/configure_and_build_libwebsockets.sh android arm64
 
 # replxx (not for mobile devices)

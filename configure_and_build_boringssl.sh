@@ -3,6 +3,7 @@
 # This is a helper script to configure and build boringssl.
 #   git clone https://github.com/google/boringssl.git
 # Requires `go` to be installed.
+# Tested with tag '0.20250514.0'.
 # Last known hash that worked for libraries that depend on boringssl: 02bc0949
 
 ########## BEGIN USER EDIT SECTION #############
@@ -50,7 +51,7 @@ if [ -z "$INSTALL_PREFIX" ]; then
    INSTALL_PREFIX="/usr/local/${BUILD_FOR}_$ARCH"
 fi
 
-OPTIONS=""
+OPTIONS="-DBUILD_TESTING=OFF"
 
 if [ -n "$INSTALL_PREFIX" ]; then
    OPTIONS="$OPTIONS -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX"

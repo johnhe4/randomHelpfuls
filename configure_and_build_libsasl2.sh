@@ -101,8 +101,6 @@ if [ "$BUILD_FOR" = "iphoneos" ] || [ "$BUILD_FOR" = "iphonesimulator" ] || [ "$
    echo "Building for $BUILD_FOR on $ARCH (sysroot=$SYSROOT)"
    OPTIONS="$OPTIONS --disable-unix-sockets"
 elif [ "$BUILD_FOR" = "android" ]; then
-   # Following guidelines from https://developer.android.com/ndk/guides/other_build_systems
-   # and https://curl.se/docs/install.html
    unameOut="$(uname -s)"
    case "${unameOut}" in
       Linux*)     HOST_TAG=linux-x86_64;;
