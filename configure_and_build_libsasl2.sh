@@ -99,7 +99,7 @@ if [ "$BUILD_FOR" = "iphoneos" ] || [ "$BUILD_FOR" = "iphonesimulator" ] || [ "$
    CFLAGS="$CFLAGS -arch $ARCH -Os -isysroot $SYSROOT"
    LDFLAGS="-arch $ARCH -isysroot $SYSROOT"
    echo "Building for $BUILD_FOR on $ARCH (sysroot=$SYSROOT)"
-   OPTIONS="$OPTIONS --disable-unix-sockets"
+   OPTIONS="$OPTIONS --with-openssl=$INSTALL_PREFIX --disable-syslog"
 elif [ "$BUILD_FOR" = "android" ]; then
    unameOut="$(uname -s)"
    case "${unameOut}" in
@@ -127,7 +127,7 @@ elif [ "$BUILD_FOR" = "android" ]; then
    export RANLIB=$TOOLCHAIN/bin/llvm-ranlib
    export STRIP=$TOOLCHAIN/bin/llvm-strip
 
-   OPTIONS="$OPTIONS --with-openssl=$INSTALL_PREFIX"
+   OPTIONS="$OPTIONS --with-openssl=$INSTALL_PREFIX --disable-syslog"
 
    # The configure script for libsasl only looks inside in the 'lib64' directory for libraries, but very likely
    # ours is inside the 'lib' directory. This causes libsasl to fail configuring (and thus "finding") OpenSSL.
