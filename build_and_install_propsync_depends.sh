@@ -21,6 +21,7 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_json.sh xros arm64
 # $SCRIPTS_DIR/configure_and_build_json.sh xrsimulator arm64
 # $SCRIPTS_DIR/configure_and_build_json.sh android arm64
+# $SCRIPTS_DIR/configure_and_build_json.sh android x86_64
 
 # libyaml
 # $SCRIPTS_DIR/configure_and_build_libyaml.sh macos arm64
@@ -32,6 +33,7 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_libyaml.sh xros arm64
 # $SCRIPTS_DIR/configure_and_build_libyaml.sh xrsimulator arm64
 # SCRIPTS_DIR/configure_and_build_libyaml.sh android arm64
+# SCRIPTS_DIR/configure_and_build_libyaml.sh android x86_64
 
 # libxml2
 # $SCRIPTS_DIR/configure_and_build_libxml2.sh macos arm64
@@ -43,6 +45,7 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_libxml2.sh xros arm64
 # $SCRIPTS_DIR/configure_and_build_libxml2.sh xrsimulator arm64
 # $SCRIPTS_DIR/configure_and_build_libxml2.sh android arm64
+# $SCRIPTS_DIR/configure_and_build_libxml2.sh android x86_64
 
 # flatbuffers
 # $SCRIPTS_DIR/configure_and_build_flatbuffers.sh macos arm64
@@ -54,6 +57,7 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_flatbuffers.sh xros arm64
 # $SCRIPTS_DIR/configure_and_build_flatbuffers.sh xrsimulator arm64
 # $SCRIPTS_DIR/configure_and_build_flatbuffers.sh android arm64
+# $SCRIPTS_DIR/configure_and_build_flatbuffers.sh android x86_64
 
 # openssl
 # $SCRIPTS_DIR/configure_and_build_openssl.sh macos arm64
@@ -65,6 +69,7 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_openssl.sh xros arm64
 # $SCRIPTS_DIR/configure_and_build_openssl.sh xrsimulator arm64
 # $SCRIPTS_DIR/configure_and_build_boringssl.sh android arm64
+# $SCRIPTS_DIR/configure_and_build_boringssl.sh android x86_64
 
 # curl
 # $SCRIPTS_DIR/configure_and_build_libcurl.sh macos arm64
@@ -76,6 +81,7 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_libcurl.sh xros arm64
 # $SCRIPTS_DIR/configure_and_build_libcurl.sh xrsimulator arm64
 # $SCRIPTS_DIR/configure_and_build_libcurl.sh android arm64
+# $SCRIPTS_DIR/configure_and_build_libcurl.sh android x86_64
 
 # rabbitmq
 # $SCRIPTS_DIR/configure_and_build_librabbitmq.sh macos arm64
@@ -87,6 +93,7 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_librabbitmq.sh xros arm64
 # $SCRIPTS_DIR/configure_and_build_librabbitmq.sh xrsimulator arm64
 # $SCRIPTS_DIR/configure_and_build_librabbitmq.sh android arm64
+# $SCRIPTS_DIR/configure_and_build_librabbitmq.sh android x86_64
 
 # libzmq
 # $SCRIPTS_DIR/configure_and_build_libzmq.sh macos arm64
@@ -98,6 +105,7 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_libzmq.sh xros arm64
 # $SCRIPTS_DIR/configure_and_build_libzmq.sh xrsimulator arm64
 # $SCRIPTS_DIR/configure_and_build_libzmq.sh android arm64
+# $SCRIPTS_DIR/configure_and_build_libzmq.sh android x86_64
 
 # libwebsockets
 # $SCRIPTS_DIR/configure_and_build_libwebsockets.sh macos arm64
@@ -109,6 +117,31 @@ SCRIPTS_DIR=~/code/randomHelpfuls
 # $SCRIPTS_DIR/configure_and_build_libwebsockets.sh xros arm64
 # $SCRIPTS_DIR/configure_and_build_libwebsockets.sh xrsimulator arm64
 # $SCRIPTS_DIR/configure_and_build_libwebsockets.sh android arm64
+# $SCRIPTS_DIR/configure_and_build_libwebsockets.sh android x86_64
+
+# libsasl2
+# $SCRIPTS_DIR/configure_and_build_libsasl2.sh macos arm64
+# $SCRIPTS_DIR/configure_and_build_libsasl2.sh macos x86_64
+# $SCRIPTS_DIR/configure_and_build_libsasl2.sh macoscatalyst x86_64
+# $SCRIPTS_DIR/configure_and_build_libsasl2.sh iphoneos arm64
+# $SCRIPTS_DIR/configure_and_build_libsasl2.sh iphonesimulator arm64
+# $SCRIPTS_DIR/configure_and_build_libsasl2.sh iphonesimulator x86_64
+# $SCRIPTS_DIR/configure_and_build_libsasl2.sh xros arm64
+# $SCRIPTS_DIR/configure_and_build_libsasl2.sh xrsimulator arm64
+# $SCRIPTS_DIR/configure_and_build_libsasl2.sh android arm64
+# $SCRIPTS_DIR/configure_and_build_libsasl2.sh android x86_64
+
+# librdkafka
+# $SCRIPTS_DIR/configure_and_build_librdkafka.sh macos arm64
+# $SCRIPTS_DIR/configure_and_build_librdkafka.sh macos x86_64
+# $SCRIPTS_DIR/configure_and_build_librdkafka.sh macoscatalyst x86_64
+# $SCRIPTS_DIR/configure_and_build_librdkafka.sh iphoneos arm64
+# $SCRIPTS_DIR/configure_and_build_librdkafka.sh iphonesimulator arm64
+# $SCRIPTS_DIR/configure_and_build_librdkafka.sh iphonesimulator x86_64
+# $SCRIPTS_DIR/configure_and_build_librdkafka.sh xros arm64
+# $SCRIPTS_DIR/configure_and_build_librdkafka.sh xrsimulator arm64
+# $SCRIPTS_DIR/configure_and_build_librdkafka.sh android arm64
+# $SCRIPTS_DIR/configure_and_build_librdkafka.sh android x86_64
 
 # replxx (not for mobile devices)
 # $SCRIPTS_DIR/configure_and_build_libreplxx.sh macos arm64

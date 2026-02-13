@@ -135,6 +135,13 @@ elif [ "$BUILD_FOR" = "android" ]; then
 elif [ "$BUILD_FOR" = "macos" ]; then
    CFLAGS="-target $ARCH-apple-darwin"
    OPTIONS="$OPTIONS --host $ARCH-apple-darwin"
+
+   # OpenSSL is NEVER automatically detected by libsasl in my experience,
+   # possibly because it only searches for the shared libs? IDK, but makes this build
+   # overly complicated.
+   # Assuming brew for macos as that is the most common and includes certs.
+   OPENSSL_DIR="/opt/homebrew/opt/openssl@3"
+   OPTIONS="$OPTIONS --with-openssl=$OPENSSL_DIR --disable-syslog"
 elif [ "$BUILD_FOR" = "win32" ]; then
    #OPTIONS="$OPTIONS --without-openssl --with-schannel"
    OPTIONS="MACHINE=x64 ENABLE_SCHANNEL=yes"
