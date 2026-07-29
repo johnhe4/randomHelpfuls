@@ -12,5 +12,5 @@ PS=~/code/libpropsync/build/bin/propsync
 # xargs acts as a "foreach" between steps.
 # awk provides a nice way to present the result.
 $PS "https://query2.finance.yahoo.com/v1/finance/screener/predefined/saved?scrIds=day_losers&count=${NUM_SYMS}&region=US" out --ser pcsv filter '/root/finance/result/*[1]/quotes/*/symbol' 2>/dev/null \
-| xargs -I %SYMBOL $PS "https://query1.finance.yahoo.com/v8/finance/chart/%SYMBOL?range=${NUM_DAYS}d&interval=1d" out --ser PCSV filter '/root/chart/result/*[1]/concat(meta/symbol, ",", indicators/quote/*[1]/close)' 2>/dev/null \
-| awk -F',' '{printf "%s    today: %.1f%%    %i day: %.1f%%\n",    $1, (($NF-$(NF-1))/$(NF-1))*100, NF-1, (($NF-$2)/$2)*100}'
+| xargs -I %SYMBOL $PS "https://query1.finance.yahoo.com/v8/finance/chart/%SYMBOL?range=${NUM_DAYS}d&interval=1d" out --ser PCSV filter '/root/chart/result/*[1]/concat(meta/symbol, ",", meta/regularMarketPrice, ",", meta/chartPreviousClose, ",", indicators/quote/*[1]/close/*[1])' 2>/dev/null \
+| awk -F',' -v days="$NUM_DAYS" '{printf "%s    today: %.1f%%    %s day: %.1f%%\n",    $1, (($2-$3)/$3)*100, days, (($2-$4)/$4)*100}'
