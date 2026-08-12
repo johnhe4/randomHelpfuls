@@ -13,4 +13,8 @@ PS=~/code/libpropsync/build/bin/propsync
 # awk provides a nice way to present the result.
 $PS "https://query2.finance.yahoo.com/v1/finance/screener/predefined/saved?scrIds=day_gainers&count=${NUM_SYMS}&region=US" out --ser pcsv filter '/root/finance/result/*[1]/quotes/*/symbol' 2>/dev/null \
 | xargs -I %SYMBOL $PS "https://query1.finance.yahoo.com/v8/finance/chart/%SYMBOL?range=${NUM_DAYS}d&interval=1d" out --ser PCSV filter '/root/chart/result/*[1]/concat(meta/symbol, ",", meta/regularMarketPrice, ",", meta/chartPreviousClose, ",", indicators/quote/*[1]/close/*[1])' 2>/dev/null \
-| awk -F',' -v days="$NUM_DAYS" '{printf "%s    today: +%.1f%%    %s day: +%.1f%%\n",    $1, (($2-$3)/$3)*100, days, (($2-$4)/$4)*100}'
+| awk -F',' -v days="$NUM_DAYS" '{
+    today = ($3=="" || $3+0==0) ? "n/a" : sprintf("%+.1f%%", (($2-$3)/$3)*100)
+    nday  = ($4=="" || $4+0==0) ? "n/a" : sprintf("%+.1f%%", (($2-$4)/$4)*100)
+    printf "%s    today: %s    %s day: %s\n", $1, today, days, nday
+  }'
