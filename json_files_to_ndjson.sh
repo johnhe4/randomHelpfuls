@@ -2,14 +2,16 @@
 set -euo pipefail
 
 usage() {
-   echo "Usage: $0 <input_dir> <output_ndjson_file>" >&2
+   echo "Usage: $0 <input_dir> <output_ndjson_file> [input_extension]" >&2
    exit 1
 }
 
-[ $# -eq 2 ] || usage
+[ $# -eq 2 ] || [ $# -eq 3 ] || usage
 
 input_dir=$1
 output_file=$2
+ext=${3:-json}
+ext=${ext#.}
 skipped_log="${output_file}.skipped"
 error_log="${output_file}.errors"
 
@@ -25,15 +27,15 @@ trap 'rm -rf "$work_dir"' EXIT
 # The fixed-width (13-digit) epoch-ms suffix sorts correctly instead.
 # (Assumes filenames contain no spaces/tabs/newlines).
 : > "$work_dir/index"
-for file in "$input_dir"/*.json; do
+for file in "$input_dir"/*."$ext"; do
    [ -e "$file" ] || continue
-   base=$(basename "$file" .json)
+   base=$(basename "$file" ".$ext")
    printf '%s\t%s\n' "${base##*_}" "$file" >> "$work_dir/index"
 done
 
 total=$(wc -l < "$work_dir/index" | tr -d ' ')
 if [ "$total" -eq 0 ]; then
-   echo "No .json files found in $input_dir" >&2
+   echo "No .$ext files found in $input_dir" >&2
    exit 1
 fi
 
