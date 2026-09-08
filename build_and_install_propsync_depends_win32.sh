@@ -32,7 +32,6 @@ vcpkg install cli11:$TARGET_TRIPLET
 vcpkg install nlohmann-json:$TARGET_TRIPLET
 vcpkg install libyaml:$TARGET_TRIPLET
 vcpkg install flatbuffers:$TARGET_TRIPLET
-vcpkg install curl:$TARGET_TRIPLET
 vcpkg install libxml2[core]:$TARGET_TRIPLET
 vcpkg install librabbitmq:$TARGET_TRIPLET
 vcpkg install zeromq:$TARGET_TRIPLET
